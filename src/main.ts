@@ -32,7 +32,7 @@ export class Ofx {
 
   getHeaders(): OFXMetaData {
     const [metaDataString] = this.data.split('<OFX>')
-    const metaDataList = metaDataString.split('\r')
+    const metaDataList = metaDataString.split('\n')
     const validate = (line: string) => !!line.trim().length
     const validatedMetaDataList = metaDataList.filter(validate)
     return convertMetaDataToObject(
@@ -41,14 +41,32 @@ export class Ofx {
     ) as OFXMetaData
   }
 
-  getBankTransferList(ofxContent: string): Pick<BankTransferList, 'STRTTRN'> {
-    const { newListText } = getBankTransferListText(ofxContent)
+  getBankTransferList(): Pick<BankTransferList, 'STRTTRN'> {
+    const { newListText } = getBankTransferListText(this.getPartialJsonData())
+
     const list = newListText.slice(10)
     const fixedList = fixJsonProblems(list)
     return JSON.parse(fixedList)
   }
 
-  sanitizeValue(field: string, value: string) {
+  private getPartialJsonData() {
+    const [_, ofxContentText] = this.data.split('<OFX>')
+    const ofxContent = '<OFX>' + ofxContentText
+    const { sanitize } = this
+    /**
+     * Use replace first for closing tag so there is no conflict in `objectStartReplacer`
+     */
+    return ofxContent
+      .replace(ELEMENT_CLOSURE_REGEX, objectEndReplacer)
+      .replace(ELEMENT_OPENING_REGEX, objectStartReplacer)
+      .split('\n')
+      .map(trim)
+      .filter(Boolean)
+      .map(sanitize, this)
+      .join('')
+  }
+
+  private sanitizeValue(field: string, value: string) {
     let fieldValue = value.replace(/[{},]/g, '')
     if (isDateField(field)) {
       fieldValue = this.configDate(fieldValue)
@@ -97,27 +115,14 @@ export class Ofx {
       jsonData.OFX.BANKMSGSRSV1.STMTTRNRS.STMTRS.BANKTRANLIST
     const summary = getTransactionsSummary(STRTTRN)
     return {
-      dtStart: DTSTART,
-      dtEnd: DTEND,
+      dateStart: DTSTART,
+      dateEnd: DTEND,
       ...summary,
     }
   }
 
   getContent(): OfxStructure {
-    const [_, ofxContentText] = this.data.split('<OFX>')
-    const ofxContent = '<OFX>' + ofxContentText
-    const { sanitize } = this
-    /**
-     * Use replace first for closing tag so there is no conflict in `objectStartReplacer`
-     */
-    const ofxText = ofxContent
-      .replace(ELEMENT_CLOSURE_REGEX, objectEndReplacer)
-      .replace(ELEMENT_OPENING_REGEX, objectStartReplacer)
-      .split('\r')
-      .map(trim)
-      .filter(Boolean)
-      .map(sanitize, this)
-      .join('')
+    const ofxText = this.getPartialJsonData()
     const { newListText, oldListText } = getBankTransferListText(ofxText)
     const result = ofxText.replace(oldListText, newListText)
     return JSON.parse(`{${fixJsonProblems(result)}}`)

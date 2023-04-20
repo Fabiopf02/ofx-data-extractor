@@ -31,13 +31,13 @@ type ConfigFitId = 'normal' | 'separated'
 export type ConfigDate = {
   /**
    * @description supported keys:
-   *  yy => year,
-   *  yyyy => year,
-   *  MM => month,
-   *  dd => day,
-   *  hh => hour,
-   *  mm => minute,
-   *  ss => second,
+   *  yy => year -> 2 digits,
+   *  yyyy or y => year,
+   *  MM or M => month,
+   *  dd or d => day,
+   *  hh or h => hour,
+   *  mm or m => minute,
+   *  ss or s => second,
    *  O => offset,
    *  TZ => timezone
    * @example format: 'y-M-d h:m:s'

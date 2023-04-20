@@ -16,11 +16,17 @@ function separatePartsOfDate(date: string) {
   return {
     yyyy: year,
     yy: year.slice(2),
+    y: year,
     MM: month,
+    M: month,
     dd: day,
+    d: day,
     hh: hour,
+    h: hour,
     mm: minutes,
+    m: minutes,
     ss: seconds,
+    s: seconds,
     O: offset,
     TZ: timezone,
   }
@@ -44,6 +50,7 @@ export function fixJsonProblems(content: string) {
     .replace(/({")/g, '{\n"')
     .replace(/(})/g, '\n}')
     .replace(/(",")/g, '",\n"')
+    .replace(/,\s*}/g, '\n}')
   return result.at(-1) === ',' ? result.slice(0, -1) : result
 }
 

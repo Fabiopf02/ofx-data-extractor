@@ -1,0 +1,207 @@
+{
+  "OFXHEADER": "100",
+  "DATA": "OFXSGML",
+  "VERSION": "102",
+  "SECURITY": "NONE",
+  "ENCODING": "UTF-8",
+  "CHARSET": "1252",
+  "COMPRESSION": "NONE",
+  "OLDFILEUID": "NONE",
+  "NEWFILEUID": "NONE",
+  "OFX": {
+    "SIGNONMSGSRSV1": {
+      "SONRS": {
+        "STATUS": {
+          "CODE": "0",
+          "SEVERITY": "INFO"
+        },
+        "DTSERVER": "2018-04-30",
+        "LANGUAGE": "POR",
+        "FI": {
+          "ORG": "Gerencianet",
+          "FID": "364"
+        }
+      }
+    },
+    "BANKMSGSRSV1": {
+      "STMTTRNRS": {
+        "TRNUID": "1",
+        "STATUS": {
+          "CODE": "0",
+          "SEVERITY": "INFO"
+        },
+        "STMTRS": {
+          "CURDEF": "BRL",
+          "BANKACCTFROM": {
+            "BANKID": "364",
+            "ACCTID": "1459950-11",
+            "ACCTTYPE": "CHECKING"
+          },
+          "BANKTRANLIST": {
+            "DTSTART": "2018-01-30",
+            "DTEND": "2018-04-29",
+            "STRTTRN": [
+              {
+                "TRNTYPE": "CREDIT",
+                "DTPOSTED": "2018-03-09",
+                "TRNAMT": "7440",
+                "FITID": "2018030607232002046000000061553574",
+                "CHECKNUM": "000000061553574",
+                "REFNUM": "2002046000000017223405",
+                "MEMO": "Repasse pagamento: 17223405 de Jorge Teixeira"
+              },
+              {
+                "TRNTYPE": "DEBIT",
+                "DTPOSTED": "2018-03-09",
+                "TRNAMT": "-334",
+                "FITID": "2018030607231001046000000061553576",
+                "CHECKNUM": "000000061553576",
+                "MEMO": "Tarifa repasse: 17223405 de Jorge Teixeira"
+              },
+              {
+                "TRNTYPE": "CREDIT",
+                "DTPOSTED": "2018-03-20",
+                "TRNAMT": "7440",
+                "FITID": "2018031703312002046000000062976602",
+                "CHECKNUM": "000000062976602",
+                "REFNUM": "2002046000000022612776",
+                "MEMO": "Repasse pagamento: 22612776 de Paulo Jorge Alves"
+              },
+              {
+                "TRNTYPE": "DEBIT",
+                "DTPOSTED": "2018-03-20",
+                "TRNAMT": "-334",
+                "FITID": "2018031703311001046000000062976603",
+                "CHECKNUM": "000000062976603",
+                "MEMO": "Tarifa repasse: 22612776 de Paulo Jorge Alves"
+              },
+              {
+                "TRNTYPE": "CREDIT",
+                "DTPOSTED": "2018-03-30",
+                "TRNAMT": "7440",
+                "FITID": "2018032704142002046000000063575983",
+                "CHECKNUM": "000000063575983",
+                "REFNUM": "2002046000000028015595",
+                "MEMO": "Repasse pagamento: 28015595 de Fulano Aguiar"
+              },
+              {
+                "TRNTYPE": "DEBIT",
+                "DTPOSTED": "2018-03-30",
+                "TRNAMT": "-334",
+                "FITID": "2018032704141001046000000063575986",
+                "CHECKNUM": "000000063575986",
+                "MEMO": "Tarifa repasse: 28015595 de Fulano Aguiar"
+              },
+              {
+                "TRNTYPE": "CREDIT",
+                "DTPOSTED": "2018-04-06",
+                "TRNAMT": "6510",
+                "FITID": "2018040307262002046000000064109592",
+                "CHECKNUM": "000000064109592",
+                "REFNUM": "2002046000000028108174",
+                "MEMO": "Repasse pagamento: 28108174 de Ciclano da Silva"
+              },
+              {
+                "TRNTYPE": "DEBIT",
+                "DTPOSTED": "2018-04-06",
+                "TRNAMT": "-334",
+                "FITID": "2018040307261001046000000064109593",
+                "CHECKNUM": "000000064109593",
+                "MEMO": "Tarifa repasse: 28108174 de Ciclano da Silva"
+              },
+              {
+                "TRNTYPE": "CREDIT",
+                "DTPOSTED": "2018-04-16",
+                "TRNAMT": "7440",
+                "FITID": "2018041303342002046000000065551500",
+                "CHECKNUM": "000000065551500",
+                "REFNUM": "2002046000000029384993",
+                "MEMO": "Repasse pagamento: 29384993 de Jorge Amado"
+              },
+              {
+                "TRNTYPE": "DEBIT",
+                "DTPOSTED": "2018-04-16",
+                "TRNAMT": "-334",
+                "FITID": "2018041303341001046000000065551501",
+                "CHECKNUM": "000000065551501",
+                "MEMO": "Tarifa repasse: 29384993 de Jorge Amado"
+              },
+              {
+                "TRNTYPE": "CREDIT",
+                "DTPOSTED": "2018-04-17",
+                "TRNAMT": "5580",
+                "FITID": "2018041403362002046000000065642576",
+                "CHECKNUM": "000000065642576",
+                "REFNUM": "2002046000000029447637",
+                "MEMO": "Repasse pagamento: 29447637 de Pedro Jorge"
+              },
+              {
+                "TRNTYPE": "DEBIT",
+                "DTPOSTED": "2018-04-17",
+                "TRNAMT": "-334",
+                "FITID": "2018041403361001046000000065642577",
+                "CHECKNUM": "000000065642577",
+                "MEMO": "Tarifa repasse: 29447637 de Pedro Jorge"
+              },
+              {
+                "TRNTYPE": "CREDIT",
+                "DTPOSTED": "2018-04-28",
+                "TRNAMT": "12090",
+                "FITID": "2018041421312002047000000065694866",
+                "CHECKNUM": "000000065694866",
+                "REFNUM": "2002047000000029517140",
+                "MEMO": "Repasse pagamento: 29517140 de Beltrano Diniz"
+              },
+              {
+                "TRNTYPE": "DEBIT",
+                "DTPOSTED": "2018-04-28",
+                "TRNAMT": "-723",
+                "FITID": "2018041421311001047000000065694867",
+                "CHECKNUM": "000000065694867",
+                "MEMO": "Tarifa repasse: 29517140 de Beltrano Diniz"
+              },
+              {
+                "TRNTYPE": "CREDIT",
+                "DTPOSTED": "2018-04-29",
+                "TRNAMT": "5580",
+                "FITID": "2018041517302002047000000065696376",
+                "CHECKNUM": "000000065696376",
+                "REFNUM": "2002047000000029533821",
+                "MEMO": "Repasse pagamento: 29533821 de Henrique Almeida"
+              },
+              {
+                "TRNTYPE": "DEBIT",
+                "DTPOSTED": "2018-04-29",
+                "TRNAMT": "-349",
+                "FITID": "2018041517301001047000000065696377",
+                "CHECKNUM": "000000065696377",
+                "MEMO": "Tarifa repasse: 29533821 de Henrique Almeida"
+              },
+              {
+                "TRNTYPE": "CREDIT",
+                "DTPOSTED": "2018-04-29",
+                "TRNAMT": "7440",
+                "FITID": "2018042606102002046000000066643667",
+                "CHECKNUM": "000000066643667",
+                "REFNUM": "2002046000000030830691",
+                "MEMO": "Repasse pagamento: 30830691 de Duque Alves"
+              },
+              {
+                "TRNTYPE": "DEBIT",
+                "DTPOSTED": "2018-04-29",
+                "TRNAMT": "-334",
+                "FITID": "2018042606101001046000000066643670",
+                "CHECKNUM": "000000066643670",
+                "MEMO": "Tarifa repasse: 30830691 de Duque Alves"
+              }
+            ]
+          },
+          "LEDGERBAL": {
+            "BALAMT": "63550",
+            "DTASOF": "2018-04-29"
+          }
+        }
+      }
+    }
+  }
+}

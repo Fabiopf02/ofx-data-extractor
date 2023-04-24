@@ -30,9 +30,7 @@
     "build": "rollup --config",
     "start": "node dist/index.js",
     "format": "prettier --write \"src/**/*.ts\"",
-    "lint": "tslint -p tsconfig.json",
-    "prepare": "npm run build",
-    "prepublishOnly": "npm test && npm run lint"
+    "lint": "tslint -p tsconfig.json"
   },
   "devDependencies": {
     "@rollup/plugin-typescript": "^10.0.1",

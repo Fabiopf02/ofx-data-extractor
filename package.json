@@ -1,7 +1,19 @@
 {
   "name": "ofx-ts",
-  "version": "1.0.0",
-  "keywords": ["ofx", "financial", "ofx-js", "ofx-ts", "banking", "parser", "data-extraction", "typescript", "utility", "ofx-file", "data-formatting"],
+  "version": "1.0.1",
+  "keywords": [
+    "ofx",
+    "financial",
+    "ofx-js",
+    "ofx-ts",
+    "banking",
+    "parser",
+    "data-extraction",
+    "typescript",
+    "utility",
+    "ofx-file",
+    "data-formatting"
+  ],
   "author": "Fábio Pereira França",
   "repository": {
     "type": "git",
@@ -9,7 +21,7 @@
   },
   "bugs": {
     "url": "https://github.com/Fabiopf02/ofx-ts/issues"
-  },  
+  },
   "license": "ISC",
   "description": "",
   "main": "dist/index.js",

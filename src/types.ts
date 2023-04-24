@@ -19,12 +19,10 @@ export type DateResponse = {
 }
 
 /**
- * separated - returns the separate transaction id: 
- *  `{
- *    "date": string,
-      "transactionCode": string,
-      "protocol": string
-    }`
+ * separated - returns the separate transaction id:
+ *  "date": string,
+ *  "transactionCode": string,
+ *  "protocol": string
  */
 type ConfigFitId = 'normal' | 'separated'
 

@@ -1,5 +1,5 @@
 import { END_TEXT_BANK_TRANSFER, START_TEXT_BANK_TRANSFER } from './config'
-import { STRTTRN } from './types'
+import { STRTTRN as STRTTRNType } from './types'
 
 function separatePartsOfDate(date: string) {
   const year = date.slice(0, 4)
@@ -109,7 +109,7 @@ export function convertMetaDataToObject(
 ) {
   const result: { [key: string]: any } = {}
   for (const line of stringList) {
-    let [key, value] = line.split(':')
+    const [key, value] = line.split(':')
     const sanitizedKey = key.replace('\n', '')
     result[sanitizedKey] =
       nativeTypes && isValidNumberToConvert(key, value) ? Number(value) : value
@@ -117,7 +117,7 @@ export function convertMetaDataToObject(
   return result
 }
 
-export function getTransactionsSummary(STRTTRN: STRTTRN[]) {
+export function getTransactionsSummary(STRTTRN: STRTTRNType[]) {
   return STRTTRN.reduce(
     (prevValue, currValue) => {
       if (currValue.TRNTYPE.toLocaleLowerCase().startsWith('deb')) {

@@ -22,7 +22,7 @@
     ".": {
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js",
-      "require": "./dist/index.mjs"
+      "require": "./dist/index.esm.js"
     }
   },
   "scripts": {

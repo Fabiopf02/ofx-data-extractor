@@ -43,7 +43,7 @@ export type ConfigDate = {
    * @example format: 'y-M-d h:m:s'
    * @returns '2022-02-21 09:00:00'
    */
-  formatDate?: FormatDate
+  formatDate?: string
 }
 
 type MapKeys<T> = {
@@ -66,12 +66,12 @@ export type OfxConfig = ConfigDate & {
   formatJson?: MapKeys<KeysJson>
 }
 
-type Status = {
+export type Status = {
   CODE: string
   SEVERITY: string
 }
 
-type BankAccountFrom = {
+export type BankAccountFrom = {
   BANKID: string
   ACCTID: string
   ACCTT: string
@@ -79,7 +79,7 @@ type BankAccountFrom = {
 
 type TransferType = string
 
-type STRTTRN = {
+export type STRTTRN = {
   TRNTYPE: TransferType
   DTPOSTED: DateResponse
   TRNAMT: string
@@ -94,12 +94,12 @@ export type BankTransferList = {
   STRTTRN: STRTTRN[]
 }
 
-type LedGerBal = {
+export type LedGerBal = {
   BALAMT: string
   DTASOF: DateResponse
 }
 
-type FINANCIAL_INSTITUTION = {
+export type FINANCIAL_INSTITUTION = {
   ORG: string
   FID: string
 }

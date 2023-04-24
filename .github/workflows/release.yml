@@ -20,13 +20,11 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
-      - name: Get previous tag
-        id: previous_tag
-        run: echo "::set-output name=tag::$(git describe --abbrev=0 --tags `git rev-list --tags --skip=1 --max-count=1`)"
       - name: Get commit messages
         id: commit_messages
         run: |
-          messages=$(git log --format='- %h - %s (%an)%n' ${previous_tag.outputs.tag}..${{ github.ref }})
+          previous_tag=$(git describe --abbrev=0 --tags `git rev-list --tags --skip=1 --max-count=1`)
+          messages=$(git log --format='- %h - %s (%an)%n' ${previous_tag}..${{ github.ref }})
           echo "::set-output name=messages::Changes\n\n$messages"
       - name: Create release
         uses: actions/create-release@v1

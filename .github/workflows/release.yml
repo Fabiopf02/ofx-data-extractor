@@ -16,9 +16,6 @@ jobs:
       - run: npm run lint
 
   create-release:
-    needs:
-      - test
-      - lint
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -28,16 +25,18 @@ jobs:
         run: echo "::set-output name=tag::$(git describe --abbrev=0 --tags `git rev-list --tags --skip=1 --max-count=1`)"
       - name: Get commit messages
         id: commit_messages
-        run: echo "::set-output name=messages::$(git log --format='#%h - %s (%an)%n' ${previous_tag.tag}..${{ github.ref }})"
+        run: |
+          messages=$(git log --format='- %h - %s (%an)%n' ${previous_tag.outputs.tag}..${{ github.ref }})
+          echo "::set-output name=messages::Changes\n\n$messages"
       - name: Create release
         uses: actions/create-release@v1
         env:
-          GITHUB_TOKEN: ${{ secrets.release_token }}
+           GITHUB_TOKEN: ${{ secrets.release_token }}
         with:
           tag_name: ${{ github.ref }}
           release_name: Release ${{ github.ref }}
           body: |
-            ${commit_messages.messages}
+            ${{ steps.commit_messages.outputs.messages }}
           draft: false
           prerelease: false
           

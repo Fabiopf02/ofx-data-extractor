@@ -3,6 +3,9 @@ name: Release Package
 on:
   push:
     tags: ['*']
+    branches:
+      - main
+      - 'ci/**'
 
 jobs:
   lint:
@@ -13,6 +16,7 @@ jobs:
         with:
           node-version: 18
       - run: npm ci
+      - run: echo $(git describe --abbrev=0 --tags `git rev-list --tags --skip=2 --max-count=1`)
       - run: npm run lint
           
   test:
@@ -37,7 +41,7 @@ jobs:
       - name: Get commit messages
         id: commit_messages
         run: |
-          previous_tag=$(git describe --abbrev=0 --tags `git rev-list --tags --skip=1 --max-count=1`)
+          previous_tag=$(git describe --abbrev=0 --tags `git rev-list --tags --skip=2 --max-count=1`)
           last_release_commit=$(git rev-list -n 1 $previous_tag)
           echo $previous_tag
           echo $github.ref

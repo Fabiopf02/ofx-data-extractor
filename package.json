@@ -1,5 +1,5 @@
 {
-  "name": "ofx-ts",
+  "name": "ofx-data-extractor",
   "version": "1.0.6",
   "keywords": [
     "ofx",
@@ -30,6 +30,9 @@
   "files": [
     "dist/**/*"
   ],
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com"
+  },
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",

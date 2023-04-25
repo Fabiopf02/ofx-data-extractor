@@ -1,4 +1,4 @@
-# ofx-ts
+# ofx-data-extractor
 ## Ofx Data Extractor and Formatter
 This is a `Node.js` module written in `TypeScript` that provides a utility for extracting data from an `OFX` file. The module can also format some of the data and retrieve specific parts of the file if requested.
 

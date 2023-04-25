@@ -38,9 +38,12 @@ jobs:
         id: commit_messages
         run: |
           previous_tag=$(git describe --abbrev=0 --tags `git rev-list --tags --skip=1 --max-count=1`)
+          last_release_commit=$(git rev-list -n 1 $previous_tag)
           echo $previous_tag
           echo $github.ref
+          echo $last_release_commit
           messages=$(git log --format='- %h - %s (%an)%n' ${previous_tag}..${{ github.ref }})
+          messages=$(git log --pretty=format:'- %h - %s (%an)%n' $last_release_commit..HEAD)
           echo "::set-output name=messages::$messages"
       - name: Create release
         uses: actions/create-release@v1

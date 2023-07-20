@@ -1,5 +1,11 @@
 export { Ofx } from './main'
-export { formatDate, fixJsonProblems } from './helpers'
+export {
+  formatDate,
+  fixJsonProblems,
+  blobToString,
+  bufferToString,
+  fileFromPathToString,
+} from './helpers'
 export type {
   OfxResponse,
   OFXMetaData,

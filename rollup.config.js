@@ -1,13 +1,20 @@
 const { minify } = require('rollup-plugin-esbuild')
 const typescript = require('@rollup/plugin-typescript')
+const commonjs = require('@rollup/plugin-commonjs')
+const nodeResolve = require('@rollup/plugin-node-resolve')
 const name = require('./package.json').main.replace(/\.js$/, '')
 
+/**
+ * @type {import('rollup').RollupOptions}
+ */
 module.exports = [
   {
     input: 'src/index.ts',
     treeshake: true,
     plugins: [
       typescript({ tsconfig: './tsconfig.json' }),
+      commonjs(),
+      nodeResolve(),
       minify({
         keepNames: false,
         treeShaking: true,
@@ -18,16 +25,13 @@ module.exports = [
       {
         file: `${name}.js`,
         format: 'cjs',
-        name: 'ofx',
-        exports: 'named',
-        sourcemap: true,
+        sourcemap: false,
       },
       {
-        file: `${name}.esm.js`,
-        format: 'esm',
+        file: `${name}.js`,
+        format: 'iife',
         name: 'ofx',
-        exports: 'named',
-        sourcemap: true,
+        sourcemap: false,
       },
     ],
   },

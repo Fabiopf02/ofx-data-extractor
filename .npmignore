@@ -1,2 +1,5 @@
 node_modules
 tests
+.github
+jest.config.js
+rollup.config.js

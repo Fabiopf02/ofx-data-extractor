@@ -76,7 +76,7 @@ export function trim(str: string) {
 
 export function objectStartReplacer(param: string) {
   if (param === START_TEXT_BANK_TRANSFER) return param
-  return param.replace('<', '').replace('>', ':{')
+  return param.replace(/[<]/g, '').replace(/[>]/g, ':{')
 }
 
 export function objectEndReplacer(param: string) {
@@ -126,9 +126,39 @@ export function getTransactionsSummary(STRTTRN: STRTTRNType[]) {
         return prevValue
       }
       prevValue.amountOfCredits++
-      prevValue.debit += Number(currValue.TRNAMT)
+      prevValue.credit += Number(currValue.TRNAMT)
       return prevValue
     },
     { credit: 0, debit: 0, amountOfCredits: 0, amountOfDebits: 0 },
   )
+}
+
+export function bufferToString(data: Buffer) {
+  return data.toString()
+}
+
+export async function fileFromPathToString(pathname: string) {
+  const fileData: string = await new Promise((resolve, reject) => {
+    import('fs').then(fs => {
+      return fs.readFile(pathname, (err, data) => {
+        if (err) reject(err)
+        else resolve(data.toString())
+      })
+    })
+  })
+  return fileData
+}
+
+export async function blobToString(blob: Blob): Promise<string> {
+  const data: string = await new Promise((resolve, reject) => {
+    if (typeof window !== 'undefined' && window.FileReader) {
+      const reader = new window.FileReader()
+      reader.onload = event => resolve(event.target!.result as string)
+      reader.onerror = event => reject(event.target!.error)
+      reader.readAsText(blob)
+    } else {
+      reject(new Error('FileReader is not available in this environment.'))
+    }
+  })
+  return data
 }

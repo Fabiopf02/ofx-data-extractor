@@ -81,7 +81,7 @@ export type STRTTRN = {
   TRNTYPE: TransferType
   DTPOSTED: DateResponse
   TRNAMT: string
-  FITID: string
+  FITID: string | { date: string; protocol: string; transactionCode: string }
   CHECKNUM: string
   MEMO: string
 }

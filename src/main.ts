@@ -1,7 +1,10 @@
 import { ELEMENT_CLOSURE_REGEX, ELEMENT_OPENING_REGEX } from './config'
 import {
+  blobToString,
+  bufferToString,
   convertMetaDataToObject,
   extractFinancialInstitutionTransactionId,
+  fileFromPathToString,
   fixJsonProblems,
   formatDate,
   getBankTransferListText,
@@ -13,35 +16,53 @@ import {
   trim,
 } from './helpers'
 import {
-  BankTransferList,
   OfxConfig,
   OFXMetaData,
   OfxResponse,
   OfxStructure,
+  STRTTRN,
 } from './types'
 
 export class Ofx {
-  private data: string
-  private config: OfxConfig = {}
+  private _data: string
+  private _config: OfxConfig = {}
 
-  constructor(data: string | Buffer, config?: OfxConfig) {
-    if (config) this.config = config
-    if (data instanceof Buffer) this.data = data.toString()
-    else this.data = data
+  constructor(data: string, config?: OfxConfig) {
+    if (config) this._config = config
+    this._data = data
+  }
+
+  static fromBuffer(data: Buffer) {
+    return new Ofx(bufferToString(data))
+  }
+
+  static async fromFilePath(pathname: string) {
+    const data = await fileFromPathToString(pathname)
+    return new Ofx(data)
+  }
+
+  static async fromBlob(blob: Blob): Promise<Ofx> {
+    const data = await blobToString(blob)
+    return new Ofx(data)
+  }
+
+  config(config: OfxConfig) {
+    this._config = config
+    return this
   }
 
   getHeaders(): OFXMetaData {
-    const [metaDataString] = this.data.split('<OFX>')
+    const [metaDataString] = this._data.split('<OFX>')
     const metaDataList = metaDataString.split('\n')
     const validate = (line: string) => !!line.trim().length
     const validatedMetaDataList = metaDataList.filter(validate)
     return convertMetaDataToObject(
       validatedMetaDataList,
-      !!this.config.nativeTypes,
+      !!this._config.nativeTypes,
     ) as OFXMetaData
   }
 
-  getBankTransferList(): Pick<BankTransferList, 'STRTTRN'> {
+  getBankTransferList(): STRTTRN[] {
     const { newListText } = getBankTransferListText(this.getPartialJsonData())
 
     const list = newListText.slice(10)
@@ -50,7 +71,7 @@ export class Ofx {
   }
 
   private getPartialJsonData() {
-    const [_, ofxContentText] = this.data.split('<OFX>')
+    const [_, ofxContentText] = this._data.split('<OFX>')
     const ofxContent = '<OFX>' + ofxContentText
     const { sanitize } = this
     /**
@@ -73,7 +94,7 @@ export class Ofx {
     } else if (field === 'FITID') {
       return this.configFinancialInstitutionTransactionId(fieldValue)
     } else if (
-      this.config.nativeTypes &&
+      this._config.nativeTypes &&
       isValidNumberToConvert(field, fieldValue)
     ) {
       return `${fieldValue},`
@@ -97,14 +118,14 @@ export class Ofx {
   }
 
   private configFinancialInstitutionTransactionId(fitString: string) {
-    const { fitId } = this.config
+    const { fitId } = this._config
     if (fitId === 'separated')
       return extractFinancialInstitutionTransactionId(fitString)
     return `"${fitString}",`
   }
 
   private configDate(dateString: string) {
-    const { formatDate: format } = this.config
+    const { formatDate: format } = this._config
     if (format) return formatDate(dateString, format)
     return formatDate(dateString, 'y-M-d')
   }

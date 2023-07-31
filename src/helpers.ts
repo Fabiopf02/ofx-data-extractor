@@ -84,6 +84,13 @@ export function objectEndReplacer(param: string) {
   return '},'
 }
 
+export function sanitizeCurrency(value: string) {
+  const comma = value.search(',')
+  const point = value.search('.')
+  if (comma > point) return value.replace(/[.]/g, '').replace(/[,]/g, '.')
+  return value.replace(/[,]/g, '')
+}
+
 export function isValidNumberToConvert(field: string, value: string) {
   if (field.endsWith('ID') || field.endsWith('NUM')) return false
   return !isNaN(Number(value))

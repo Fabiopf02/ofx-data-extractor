@@ -13,6 +13,7 @@ import {
   isValidNumberToConvert,
   objectEndReplacer,
   objectStartReplacer,
+  sanitizeCurrency,
   trim,
 } from './helpers'
 import {
@@ -88,15 +89,12 @@ export class Ofx {
   }
 
   private sanitizeValue(field: string, value: string) {
-    let fieldValue = value.replace(/[{},]/g, '')
-    if (isDateField(field)) {
-      fieldValue = this.configDate(fieldValue)
-    } else if (field === 'FITID') {
+    let fieldValue = value.replace(/[{]/, '').replace(/(},)/, '')
+    if (field.endsWith('AMT')) fieldValue = sanitizeCurrency(fieldValue)
+    if (isDateField(field)) fieldValue = this.configDate(fieldValue)
+    if (field === 'FITID')
       return this.configFinancialInstitutionTransactionId(fieldValue)
-    } else if (
-      this._config.nativeTypes &&
-      isValidNumberToConvert(field, fieldValue)
-    ) {
+    if (this._config.nativeTypes && isValidNumberToConvert(field, fieldValue)) {
       return `${fieldValue},`
     }
     return `"${fieldValue}",`

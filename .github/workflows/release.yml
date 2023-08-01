@@ -16,9 +16,8 @@ jobs:
         with:
           node-version: 18
       - run: npm ci
-      - run: echo $(git describe --abbrev=0 --tags `git rev-list --tags --skip=2 --max-count=1`)
       - run: npm run lint
-          
+
   test:
     runs-on: ubuntu-latest
     steps:
@@ -26,54 +25,9 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: 18
-      - run: npm ci
-      - run: npm run build
-      - run: npm run test
-
-  create-release:
-    runs-on: ubuntu-latest
-    needs:
-      - test
-      - lint
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-      - name: Get commit messages
-        id: commit_messages
-        run: |
-          previous_tag=$(git describe --abbrev=0 --tags `git rev-list --tags --skip=2 --max-count=1`)
-          last_release_commit=$(git rev-list -n 1 $previous_tag)
-          echo $previous_tag
-          echo $github.ref
-          echo $last_release_commit
-          messages=$(git log --format='- %h - %s (%an)%n' ${previous_tag}..${{ github.ref }})
-          messages=$(git log --pretty=format:'- %h - %s (%an)%n' $last_release_commit..HEAD)
-          echo "::set-output name=messages::$messages"
-      - name: Create release
-        uses: actions/create-release@v1
+      - run: npm install
+      - run: npm run test:coverage
+      - name: Upload coverage reports to Codecov
+        uses: codecov/codecov-action@v3
         env:
-           GITHUB_TOKEN: ${{ secrets.release_token }}
-        with:
-          tag_name: ${{ github.ref }}
-          release_name: Release ${{ github.ref }}
-          body: |
-            ${{ steps.commit_messages.outputs.messages }}
-          draft: false
-          prerelease: false 
-
-  publish-npm:
-    needs:
-      - create-release
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
-        with:
-          node-version: 18
-          registry-url: https://registry.npmjs.org/
-      - run: npm ci
-      - run: npm run build
-      - run: npm publish
-        env:
-          NODE_AUTH_TOKEN: ${{secrets.npm_token}}
-
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}

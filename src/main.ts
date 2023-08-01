@@ -1,4 +1,3 @@
-import { writeFileSync } from 'fs'
 import { ELEMENT_CLOSURE_REGEX, ELEMENT_OPENING_REGEX } from './config'
 import {
   blobToString,
@@ -147,7 +146,6 @@ export class Ofx {
     const ofxText = this.getPartialJsonData()
     const { newListText, oldListText } = getBankTransferListText(ofxText)
     const result = ofxText.replace(oldListText, newListText)
-    writeFileSync('test.txt', `{${fixJsonProblems(result)}}`)
     return JSON.parse(`{${fixJsonProblems(result)}}`)
   }
 

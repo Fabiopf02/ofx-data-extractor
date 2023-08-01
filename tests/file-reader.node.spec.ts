@@ -1,11 +1,9 @@
 import { Ofx } from '../src/index'
 import path from 'path'
 import fs from 'fs'
-import { blobToString, fileFromPathToString } from '../src/helpers'
+import { fileFromPathToString } from '../src/helpers'
 
 describe('Tests in the Node.js environment', () => {
-  const file = fs.readFileSync(path.resolve(__dirname, 'example.ofx'))
-
   test.concurrent('Should read file path', async () => {
     const ofx = await Ofx.fromFilePath(path.resolve(__dirname, 'example.ofx'))
     const headers = ofx.getHeaders()
@@ -30,8 +28,9 @@ describe('Tests in the Node.js environment', () => {
   test.concurrent('Should throw error for invalid file path', async () => {
     expect(() =>
       fileFromPathToString(path.resolve(__dirname, 'exampl.ofx')),
-    ).rejects.toThrow(
-      "ENOENT: no such file or directory, open '/home/projects/ofx-data-extractor/tests/exampl.ofx'",
-    )
+    ).rejects.toMatchObject({
+      code: 'ENOENT',
+      syscall: 'open',
+    })
   })
 })

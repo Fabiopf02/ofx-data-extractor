@@ -3,3 +3,4 @@ tests
 .github
 jest.config.js
 rollup.config.js
+.npmignore

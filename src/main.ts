@@ -89,7 +89,7 @@ export class Ofx {
   }
 
   private sanitizeValue(field: string, value: string) {
-    let fieldValue = value.replace(/[{]/, '').replace(/(},)/, '')
+    let fieldValue = value.replace(/[{]/g, '').replace(/(},)/g, '')
     if (field.endsWith('AMT')) fieldValue = sanitizeCurrency(fieldValue)
     if (isDateField(field)) fieldValue = this.configDate(fieldValue)
     if (field === 'FITID')

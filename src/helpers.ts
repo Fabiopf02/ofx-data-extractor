@@ -51,6 +51,7 @@ export function fixJsonProblems(content: string) {
     .replace(/(})/g, '\n}')
     .replace(/(",")/g, '",\n"')
     .replace(/,\s*}/g, '\n}')
+    .replace(/(,",)/, ',')
   return result.at(-1) === ',' ? result.slice(0, -1) : result
 }
 
@@ -76,11 +77,11 @@ export function trim(str: string) {
 
 export function objectStartReplacer(param: string) {
   if (param === START_TEXT_BANK_TRANSFER) return param
-  return param.replace(/[<]/g, '').replace(/[>]/g, ':{')
+  return param.replace(/[<]/g, '\n').replace(/[>]/g, ':{')
 }
 
 export function objectEndReplacer(param: string) {
-  if (param === END_TEXT_BANK_TRANSFER) return param
+  if (param === END_TEXT_BANK_TRANSFER) return `\n${param}`
   return '},'
 }
 

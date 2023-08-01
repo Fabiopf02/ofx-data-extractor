@@ -1,3 +1,4 @@
+import { writeFileSync } from 'fs'
 import { ELEMENT_CLOSURE_REGEX, ELEMENT_OPENING_REGEX } from './config'
 import {
   blobToString,
@@ -111,8 +112,7 @@ export class Ofx {
     }
     const matchedProperty = sanitizedLine.search(/(^\w+:)/)
     if (matchedProperty < 0) return sanitizedLine
-
-    return sanitizedLine.replace(field, `"${field}"`)
+    return sanitizedLine.replace(field + ':', `"${field}":`)
   }
 
   private configFinancialInstitutionTransactionId(fitString: string) {
@@ -130,9 +130,12 @@ export class Ofx {
 
   getTransactionsSummary() {
     const jsonData = this.getContent()
-    const { DTEND, DTSTART, STRTTRN } =
-      jsonData.OFX.BANKMSGSRSV1.STMTTRNRS.STMTRS.BANKTRANLIST
-    const summary = getTransactionsSummary(STRTTRN)
+    const {
+      DTEND,
+      DTSTART,
+      STRTTRN: transactions,
+    } = jsonData.OFX.BANKMSGSRSV1.STMTTRNRS.STMTRS.BANKTRANLIST
+    const summary = getTransactionsSummary(transactions)
     return {
       dateStart: DTSTART,
       dateEnd: DTEND,
@@ -144,6 +147,7 @@ export class Ofx {
     const ofxText = this.getPartialJsonData()
     const { newListText, oldListText } = getBankTransferListText(ofxText)
     const result = ofxText.replace(oldListText, newListText)
+    writeFileSync('test.txt', `{${fixJsonProblems(result)}}`)
     return JSON.parse(`{${fixJsonProblems(result)}}`)
   }
 

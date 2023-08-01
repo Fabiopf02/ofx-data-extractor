@@ -6,13 +6,24 @@
     "financial",
     "ofx-js",
     "ofx-ts",
+    "ofx to json",
+    "export ofx",
+    "ofx json",
+    "ofx manipulation",
     "banking",
     "parser",
     "data-extraction",
+    "extract ofx",
     "typescript",
     "utility",
     "ofx-file",
-    "data-formatting"
+    "data-formatting",
+    "ofx node",
+    "ofx js",
+    "ofx ts",
+    "ofx extractor",
+    "ofx browser",
+    "open financial exchange"
   ],
   "author": "Fábio Pereira França",
   "repository": {
@@ -22,7 +33,7 @@
   "bugs": {
     "url": "https://github.com/Fabiopf02/ofx-ts/issues"
   },
-  "license": "ISC",
+  "license": "MIT",
   "description": "",
   "main": "dist/index.js",
   "module": "dist/index.mjs",

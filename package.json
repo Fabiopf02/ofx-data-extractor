@@ -1,6 +1,6 @@
 {
   "name": "ofx-data-extractor",
-  "version": "1.2.2",
+  "version": "1.2.1",
   "keywords": [
     "ofx",
     "financial",
@@ -34,20 +34,13 @@
     "url": "https://github.com/Fabiopf02/ofx-ts/issues"
   },
   "license": "MIT",
-  "description": "",
-  "main": "dist/index.js",
-  "module": "dist/index.mjs",
+  "description": "A module written in TypeScript that provides a utility to extract data from an OFX file in Node.js and Browser",
+  "main": "dist/umd/bundle.min.js",
+  "module": "dist/esm/index.min.js",
   "typings": "dist/index.d.ts",
   "files": [
     "dist/**/*"
   ],
-  "exports": {
-    ".": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.js",
-      "require": "./dist/index.esm.js"
-    }
-  },
   "scripts": {
     "test": "jest tests/*.spec.ts --config jest.config.js",
     "test:coverage": "jest tests/*.spec.ts --coverage --config jest.config.js",

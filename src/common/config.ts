@@ -10,24 +10,24 @@ import { ELEMENT_CLOSURE_REGEX, ELEMENT_OPENING_REGEX } from './constants'
 import { objectStartReplacer, objectEndReplacer, trim } from './parse'
 
 export class Config {
-  private __config = {} as ExtractorConfig
+  private internConfig = {} as ExtractorConfig
 
   constructor(private readonly config: ExtractorConfig) {
-    this.__config = config
+    this.internConfig = config
   }
 
   getConfig() {
-    return this.__config
+    return this.internConfig
   }
 
   private configDate(dateString: string) {
-    const { formatDate: format } = this.__config
+    const { formatDate: format } = this.internConfig
     if (format) return formatDate(dateString, format)
     return formatDate(dateString, 'y-M-d')
   }
 
   private configFinancialInstitutionTransactionId(fitString: string) {
-    const { fitId } = this.__config
+    const { fitId } = this.internConfig
     if (fitId === 'separated')
       return extractFinancialInstitutionTransactionId(fitString)
     return `"${fitString}",`
@@ -40,7 +40,7 @@ export class Config {
     if (field === 'FITID')
       return this.configFinancialInstitutionTransactionId(fieldValue)
     if (
-      this.__config.nativeTypes &&
+      this.internConfig.nativeTypes &&
       isValidNumberToConvert(field, fieldValue)
     ) {
       return `${fieldValue},`

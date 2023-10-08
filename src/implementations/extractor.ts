@@ -6,54 +6,58 @@ import { Config } from '../common/config'
 import { Reader } from './reader'
 
 export class Extractor<T = any> implements IExtractor<T> {
-  private __customExtractor: CustomExtractor
-  private __dataRead: Reader = new Reader('')
+  private customExtractorInstance: CustomExtractor
+  private dataReaderInstance: Reader = new Reader('')
 
   constructor(private readonly customExtractor: CustomExtractor) {
-    this.__customExtractor = customExtractor
+    this.customExtractorInstance = customExtractor
     this.config({})
   }
 
   data(readData: Reader) {
-    this.__dataRead = readData
+    this.dataReaderInstance = readData
     return this
   }
 
   config(config: ExtractorConfig): this {
     const configInstance = new Config(config)
-    this.__customExtractor.setConfig(configInstance)
+    this.customExtractorInstance.setConfig(configInstance)
     return this
   }
 
   getHeaders(): MetaData {
-    const [metaDataString] = this.__dataRead.getData().split('<OFX>')
+    const [metaDataString] = this.dataReaderInstance.getData().split('<OFX>')
     const metaDataList = metaDataString.split('\n')
     const validate = (line: string) => !!line.trim().length
     const validatedMetaDataList = metaDataList.filter(validate)
     return convertMetaDataToObject(
       validatedMetaDataList,
-      !!this.__customExtractor.configInstance.getConfig().nativeTypes,
+      !!this.customExtractorInstance.configInstance.getConfig().nativeTypes,
     ) as MetaData
   }
 
   getBankTransferList() {
-    return this.__customExtractor.getBankTransferList(this.__dataRead.getData())
+    return this.customExtractorInstance.getBankTransferList(
+      this.dataReaderInstance.getData(),
+    )
   }
 
   getTransactionsSummary() {
-    return this.__customExtractor.getTransactionsSummary(
-      this.__dataRead.getData(),
+    return this.customExtractorInstance.getTransactionsSummary(
+      this.dataReaderInstance.getData(),
     )
   }
 
   getContent() {
-    return this.__customExtractor.getContent(this.__dataRead.getData())
+    return this.customExtractorInstance.getContent(
+      this.dataReaderInstance.getData(),
+    )
   }
 
   toJson(): T {
     const ofxMetaDataResult = this.getHeaders()
-    const ofxContentResult = this.__customExtractor.getContent(
-      this.__dataRead.getData(),
+    const ofxContentResult = this.customExtractorInstance.getContent(
+      this.dataReaderInstance.getData(),
     )
     return { ...ofxMetaDataResult, ...ofxContentResult } as T
   }

@@ -5,14 +5,14 @@ import {
 } from '../common/reader'
 
 export class Reader {
-  private __data: string = ''
+  private dataRead: string = ''
 
   constructor(private readonly data?: string) {
-    if (data) this.__data = data
+    if (data) this.dataRead = data
   }
 
   getData(): string {
-    return this.__data
+    return this.dataRead
   }
 
   public fromString(data: string) {

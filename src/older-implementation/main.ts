@@ -8,7 +8,6 @@ export class Ofx {
   private extractor: Extractor
 
   constructor(data: string, config?: OfxConfig) {
-    console.warn('This class may be removed due to the new implementation')
     this.extractor = new Extractor(new OfxExtractor())
     this.extractor.data(new Reader(data))
     this.extractor.config(config || {})

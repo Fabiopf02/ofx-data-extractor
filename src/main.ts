@@ -1,3 +1,4 @@
+import { Config } from './common/config'
 import { ELEMENT_CLOSURE_REGEX, ELEMENT_OPENING_REGEX } from './config'
 import {
   blobToString,
@@ -26,10 +27,10 @@ import {
 
 export class Ofx {
   private _data: string
-  private _config: OfxConfig = {}
+  private _config: Config
 
   constructor(data: string, config?: OfxConfig) {
-    if (config) this._config = config
+    this._config = new Config(config || {})
     this._data = data
   }
 
@@ -48,7 +49,7 @@ export class Ofx {
   }
 
   config(config: OfxConfig) {
-    this._config = config
+    this._config = new Config(config)
     return this
   }
 
@@ -59,72 +60,17 @@ export class Ofx {
     const validatedMetaDataList = metaDataList.filter(validate)
     return convertMetaDataToObject(
       validatedMetaDataList,
-      !!this._config.nativeTypes,
+      !!this._config.getConfig().nativeTypes,
     ) as OFXMetaData
   }
 
   getBankTransferList(): STRTTRN[] {
-    const { newListText } = getBankTransferListText(this.getPartialJsonData())
-
+    const { newListText } = getBankTransferListText(
+      this._config.getPartialJsonData(this._data),
+    )
     const list = newListText.slice(10)
     const fixedList = fixJsonProblems(list)
     return JSON.parse(fixedList)
-  }
-
-  private getPartialJsonData() {
-    const [_, ofxContentText] = this._data.split('<OFX>')
-    const ofxContent = '<OFX>' + ofxContentText
-    const { sanitize } = this
-    /**
-     * Use replace first for closing tag so there is no conflict in `objectStartReplacer`
-     */
-    return ofxContent
-      .replace(ELEMENT_CLOSURE_REGEX, objectEndReplacer)
-      .replace(ELEMENT_OPENING_REGEX, objectStartReplacer)
-      .split('\n')
-      .map(trim)
-      .filter(Boolean)
-      .map(sanitize, this)
-      .join('')
-  }
-
-  private sanitizeValue(field: string, value: string) {
-    let fieldValue = value.replace(/[{]/g, '').replace(/(},)/g, '')
-    if (field.endsWith('AMT')) fieldValue = sanitizeCurrency(fieldValue)
-    if (isDateField(field)) fieldValue = this.configDate(fieldValue)
-    if (field === 'FITID')
-      return this.configFinancialInstitutionTransactionId(fieldValue)
-    if (this._config.nativeTypes && isValidNumberToConvert(field, fieldValue)) {
-      return `${fieldValue},`
-    }
-    return `"${fieldValue}",`
-  }
-
-  private sanitize(line: string) {
-    let sanitizedLine = line
-    const field = sanitizedLine.slice(0, sanitizedLine.indexOf(':'))
-    const sanitizeValue = this.sanitizeValue
-    const replacer = (matched: string) =>
-      sanitizeValue.call(this, field, matched)
-    if (line.match(/{(\w|\W)+/)) {
-      sanitizedLine = sanitizedLine.replace(/({(\w|\W)+)$/, replacer)
-    }
-    const matchedProperty = sanitizedLine.search(/(^\w+:)/)
-    if (matchedProperty < 0) return sanitizedLine
-    return sanitizedLine.replace(field + ':', `"${field}":`)
-  }
-
-  private configFinancialInstitutionTransactionId(fitString: string) {
-    const { fitId } = this._config
-    if (fitId === 'separated')
-      return extractFinancialInstitutionTransactionId(fitString)
-    return `"${fitString}",`
-  }
-
-  private configDate(dateString: string) {
-    const { formatDate: format } = this._config
-    if (format) return formatDate(dateString, format)
-    return formatDate(dateString, 'y-M-d')
   }
 
   getTransactionsSummary() {
@@ -143,7 +89,7 @@ export class Ofx {
   }
 
   getContent(): OfxStructure {
-    const ofxText = this.getPartialJsonData()
+    const ofxText = this._config.getPartialJsonData(this._data)
     const { newListText, oldListText } = getBankTransferListText(ofxText)
     const result = ofxText.replace(oldListText, newListText)
     return JSON.parse(`{${fixJsonProblems(result)}}`)

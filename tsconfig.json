@@ -9,9 +9,15 @@
     "declaration": true,
     "strict": true,
     "skipLibCheck": true,
+    "paths": {
+      "types/*": ["src/@types/*"],
+      "@interfaces/*": ["./src/interfaces/*"],
+      "@implementations/*": ["./src/implementations/*"]
+    }
   },
-  "include": ["src/**/*.ts"],
+  "include": ["./src/**/*.ts"],
   "exclude": [
-    "node_modules"
-  ]
+    "node_modules",
+    "dist"
+  ],
 }

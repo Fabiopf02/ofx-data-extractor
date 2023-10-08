@@ -26,7 +26,7 @@ describe('Tests in Web/Browser environment', () => {
   })
 
   test.concurrent('Should throw error with invalid blob', () => {
-    jest.mock('../src/older-implementation/helpers', () => ({
+    jest.mock('../src/common/reader', () => ({
       window: null,
     }))
     expect(

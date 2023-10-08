@@ -1,4 +1,4 @@
-import type { DateResponse, MetaData } from './common'
+import type { ConfigDate, ConfigFitId, DateResponse, MetaData } from './common'
 
 export type Status = {
   CODE: string
@@ -12,6 +12,12 @@ export type BankAccountFrom = {
 }
 
 type TransferType = string
+
+export type OfxConfig = ConfigDate & {
+  fitId?: ConfigFitId
+  nativeTypes?: boolean
+  // formatJson?: MapKeys<KeysJson>
+}
 
 export type STRTTRN = {
   TRNTYPE: TransferType

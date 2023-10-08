@@ -1,103 +1,55 @@
-import { Config } from '../common/config'
-import {
-  blobToString,
-  bufferToString,
-  convertMetaDataToObject,
-  extractFinancialInstitutionTransactionId,
-  fileFromPathToString,
-  fixJsonProblems,
-  formatDate,
-  getBankTransferListText,
-  getTransactionsSummary,
-  isDateField,
-  isValidNumberToConvert,
-  objectEndReplacer,
-  objectStartReplacer,
-  sanitizeCurrency,
-  trim,
-} from './helpers'
-import {
-  OfxConfig,
-  OFXMetaData,
-  OfxResponse,
-  OfxStructure,
-  STRTTRN,
-} from './types'
+import { Extractor } from '../implementations/extractor'
+import { MetaData } from '../@types/common'
+import { OfxResponse, OfxStructure, STRTTRN, OfxConfig } from '../@types/ofx'
+import { OfxExtractor } from '../implementations/ofx-extractor'
+import { Reader } from '../implementations/reader'
 
 export class Ofx {
-  private _data: string
-  private _config: Config
+  private extractor: Extractor
 
   constructor(data: string, config?: OfxConfig) {
-    this._config = new Config(config || {})
-    this._data = data
+    console.warn('This class may be removed due to the new implementation')
+    this.extractor = new Extractor(new OfxExtractor())
+    this.extractor.data(new Reader(data))
+    this.extractor.config(config || {})
   }
 
   static fromBuffer(data: Buffer) {
-    return new Ofx(bufferToString(data))
+    return new Ofx(Reader.fromBuffer(data).getData())
   }
 
   static async fromFilePath(pathname: string) {
-    const data = await fileFromPathToString(pathname)
-    return new Ofx(data)
+    const reader = await Reader.fromFilePath(pathname)
+    return new Ofx(reader.getData())
   }
 
   static async fromBlob(blob: Blob): Promise<Ofx> {
-    const data = await blobToString(blob)
-    return new Ofx(data)
+    const reader = await Reader.fromBlob(blob)
+    return new Ofx(reader.getData())
   }
 
   config(config: OfxConfig) {
-    this._config = new Config(config)
+    this.extractor.config(config)
     return this
   }
 
-  getHeaders(): OFXMetaData {
-    const [metaDataString] = this._data.split('<OFX>')
-    const metaDataList = metaDataString.split('\n')
-    const validate = (line: string) => !!line.trim().length
-    const validatedMetaDataList = metaDataList.filter(validate)
-    return convertMetaDataToObject(
-      validatedMetaDataList,
-      !!this._config.getConfig().nativeTypes,
-    ) as OFXMetaData
+  getHeaders(): MetaData {
+    return this.extractor.getHeaders()
   }
 
   getBankTransferList(): STRTTRN[] {
-    const { newListText } = getBankTransferListText(
-      this._config.getPartialJsonData(this._data),
-    )
-    const list = newListText.slice(10)
-    const fixedList = fixJsonProblems(list)
-    return JSON.parse(fixedList)
+    return this.extractor.getBankTransferList()
   }
 
   getTransactionsSummary() {
-    const jsonData = this.getContent()
-    const {
-      DTEND,
-      DTSTART,
-      STRTTRN: transactions,
-    } = jsonData.OFX.BANKMSGSRSV1.STMTTRNRS.STMTRS.BANKTRANLIST
-    const summary = getTransactionsSummary(transactions)
-    return {
-      dateStart: DTSTART,
-      dateEnd: DTEND,
-      ...summary,
-    }
+    return this.extractor.getTransactionsSummary()
   }
 
   getContent(): OfxStructure {
-    const ofxText = this._config.getPartialJsonData(this._data)
-    const { newListText, oldListText } = getBankTransferListText(ofxText)
-    const result = ofxText.replace(oldListText, newListText)
-    return JSON.parse(`{${fixJsonProblems(result)}}`)
+    return this.extractor.getContent() as OfxStructure
   }
 
   toJson(): OfxResponse {
-    const ofxMetaDataResult = this.getHeaders()
-    const ofxContentResult = this.getContent()
-    const result = { ...ofxMetaDataResult, ...ofxContentResult }
-    return result
+    return this.extractor.toJson()
   }
 }

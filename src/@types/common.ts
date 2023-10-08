@@ -36,7 +36,7 @@ export type ConfigDate = {
   formatDate?: string
 }
 
-type ConfigFitId = 'normal' | 'separated'
+export type ConfigFitId = 'normal' | 'separated'
 
 export type ExtractorConfig = ConfigDate & {
   fitId?: ConfigFitId

@@ -1,14 +1,10 @@
-export { Ofx } from './main'
+export { Ofx } from './older-implementation/main'
 export {
   formatDate,
   fixJsonProblems,
   blobToString,
   bufferToString,
   fileFromPathToString,
-} from './helpers'
-export type {
-  OfxResponse,
-  OFXMetaData,
-  OfxStructure,
-  BankTransferList,
-} from './types'
+} from './older-implementation/helpers'
+export type { OfxResponse, OfxStructure, BankTransferList } from './@types/ofx'
+export type { MetaData } from './@types/common'

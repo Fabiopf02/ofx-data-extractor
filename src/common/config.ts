@@ -5,7 +5,7 @@ import {
   isDateField,
   sanitizeCurrency,
 } from './parse'
-import { ExtractorConfig } from 'types/common'
+import { ExtractorConfig } from '../@types/common'
 import { ELEMENT_CLOSURE_REGEX, ELEMENT_OPENING_REGEX } from './constants'
 import { objectStartReplacer, objectEndReplacer, trim } from './parse'
 

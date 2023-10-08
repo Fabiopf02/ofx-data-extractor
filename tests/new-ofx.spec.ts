@@ -1,18 +1,21 @@
 import path from 'path'
 import fs from 'fs'
 import { Extractor } from '../src/implementations/extractor'
-import { Ofx } from '../src/implementations/ofx'
+import { OfxExtractor } from '../src/implementations/ofx-extractor'
+import { Reader } from '../src/implementations/reader'
 
-const ofxExtractor = new Ofx()
+const ofxExtractor = new OfxExtractor()
+const reader = new Reader()
 const extractor = new Extractor(ofxExtractor)
 
 describe('Tests in the Node.js environment', () => {
   const file = fs.readFileSync(path.resolve(__dirname, 'example.ofx'))
 
   test('Should read file path', async () => {
-    const ofx = await extractor.fromFilePath(
+    const data = await Reader.fromFilePath(
       path.resolve(__dirname, 'example.ofx'),
     )
+    const ofx = extractor.data(data)
     const headers = ofx.config({ nativeTypes: false }).getHeaders()
     expect(headers.OFXHEADER).toBe('100')
     expect(headers.CHARSET).toBe('1252')
@@ -21,10 +24,12 @@ describe('Tests in the Node.js environment', () => {
   })
 
   test('Should read Buffer content', async () => {
-    const file = fs.readFileSync(path.resolve(__dirname, 'example.ofx'))
+    const data = Reader.fromBuffer(
+      fs.readFileSync(path.resolve(__dirname, 'example.ofx')),
+    )
     const headers = extractor
+      .data(data)
       .config({ nativeTypes: true })
-      .fromBuffer(file)
       .getHeaders()
     expect(headers.OFXHEADER).toBe(100)
     expect(headers.CHARSET).toBe(1252)
@@ -33,11 +38,13 @@ describe('Tests in the Node.js environment', () => {
   })
 
   test.concurrent('It should return the correct amount of transactions', () => {
-    expect(extractor.fromBuffer(file).getBankTransferList()).toHaveLength(18)
+    const data = Reader.fromBuffer(file)
+    expect(extractor.data(data).getBankTransferList()).toHaveLength(18)
   })
 
   test.concurrent('Should correctly return transaction summary', () => {
-    const summary = extractor.fromBuffer(file).getTransactionsSummary()
+    const data = Reader.fromBuffer(file)
+    const summary = extractor.data(data).getTransactionsSummary()
     expect(summary.credit).toBe(669.6)
     expect(summary.debit.toFixed(1)).toBe('34.1')
     expect(summary.amountOfCredits).toBe(9)
@@ -47,22 +54,24 @@ describe('Tests in the Node.js environment', () => {
   })
 
   test.concurrent('It should be equal to the snapshot', () => {
-    const jsonData = extractor.fromBuffer(file).toJson()
+    const data = Reader.fromBuffer(file)
+    const jsonData = extractor.data(data).toJson()
     expect(jsonData).toMatchSnapshot()
   })
   test.concurrent('It should be equal to the snapshot /2', async () => {
-    const extractorInstance = await extractor.fromFilePath(
+    const data = await Reader.fromFilePath(
       path.resolve(__dirname, 'example.ofx'),
     )
+    const extractorInstance = extractor.data(data)
     expect(extractorInstance.getContent()).toMatchSnapshot()
   })
 
   test.concurrent('Should separate the FITID', () => {
     const toCompare = extractor
-      .fromString(file.toString())
+      .data(reader.fromString(file.toString()))
       .getBankTransferList()[0]
     const result = extractor
-      .fromBuffer(file)
+      .data(reader.fromBuffer(file))
       .config({ fitId: 'separated' })
       .getBankTransferList()[0].FITID as any
     expect(toCompare.FITID).toBe(
@@ -72,7 +81,7 @@ describe('Tests in the Node.js environment', () => {
 
   test.concurrent('Should format the date correctly (d/M/y)', () => {
     const date = extractor
-      .fromBuffer(file)
+      .data(reader.fromBuffer(file))
       .config({ formatDate: 'd/M/y' })
       .getBankTransferList()[0].DTPOSTED
     expect('09/03/2018').toBe(date)
@@ -80,7 +89,7 @@ describe('Tests in the Node.js environment', () => {
 
   test.concurrent('It should correctly return the offset and timezone', () => {
     const date = extractor
-      .fromString(file.toString())
+      .data(Reader.fromString(file.toString()))
       .config({ formatDate: 'O TZ' })
       .getBankTransferList()[0].DTPOSTED
     expect('-3 BRT').toBe(date)
@@ -88,7 +97,7 @@ describe('Tests in the Node.js environment', () => {
 
   test.concurrent('It should correctly return the offset and timezone', () => {
     const transfer = extractor
-      .fromBuffer(file)
+      .data(reader.fromBuffer(file))
       .config({ nativeTypes: true })
       .getBankTransferList()[0]
     expect(typeof transfer.TRNAMT).toBe('number')

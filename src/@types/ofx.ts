@@ -1,4 +1,4 @@
-import type { DateResponse, MetaData } from 'types/common'
+import type { DateResponse, MetaData } from './common'
 
 export type Status = {
   CODE: string

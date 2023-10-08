@@ -2,13 +2,13 @@ import {
   fixJsonProblems,
   getBankTransferListText,
   getTransactionsSummary,
-} from '../helpers'
-import { OfxStructure } from '../types'
+} from '../common/parse'
+import { OfxStructure } from '../@types/ofx'
 import { CustomExtractor } from '../interfaces/custom-extractor.interface'
 import { Config } from '../common/config'
-import { TransactionsSummary } from 'types/common'
+import { TransactionsSummary } from '../@types/common'
 
-export class Ofx extends CustomExtractor {
+export class OfxExtractor extends CustomExtractor {
   setConfig(config: Config) {
     this.configInstance = config
   }

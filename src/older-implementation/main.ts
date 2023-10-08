@@ -1,5 +1,4 @@
-import { Config } from './common/config'
-import { ELEMENT_CLOSURE_REGEX, ELEMENT_OPENING_REGEX } from './config'
+import { Config } from '../common/config'
 import {
   blobToString,
   bufferToString,

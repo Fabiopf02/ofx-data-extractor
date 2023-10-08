@@ -1,5 +1,5 @@
 import { END_TEXT_BANK_TRANSFER, START_TEXT_BANK_TRANSFER } from './constants'
-import type { STRTTRN as STRTTRNType } from 'types/ofx'
+import type { STRTTRN as STRTTRNType } from '../@types/ofx'
 import { formatDate } from './date'
 
 export function fixJsonProblems(content: string) {

@@ -10,7 +10,7 @@
     "strict": true,
     "skipLibCheck": true,
     "paths": {
-      "types/*": ["src/@types/*"],
+      "@types/*": ["src/@types/*"],
       "@interfaces/*": ["./src/interfaces/*"],
       "@implementations/*": ["./src/implementations/*"]
     }

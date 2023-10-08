@@ -1,5 +1,5 @@
 import { Config } from 'src/common/config'
-import { TransactionsSummary } from 'types/common'
+import { TransactionsSummary } from '../@types/common'
 
 export abstract class CustomExtractor {
   configInstance: Config = {} as Config

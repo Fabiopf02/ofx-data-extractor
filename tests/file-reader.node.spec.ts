@@ -1,7 +1,6 @@
 import { Ofx } from '../src/index'
 import path from 'path'
-import fs from 'fs'
-import { fileFromPathToString } from '../src/helpers'
+import { fileFromPathToString } from '../src/common/reader'
 
 describe('Tests in the Node.js environment', () => {
   test.concurrent('Should read file path', async () => {

@@ -1,0 +1,57 @@
+[33ma36e4d4[m[33m ([m[1;36mHEAD -> [m[1;32mrefactor/core[m[33m, [m[1;33mtag: v1.2.4[m[33m, [m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m, [m[1;32mmain[m[33m)[m chore: release v1.2.4
+[33m3bd6eb5[m[33m ([m[1;33mtag: v1.2.3[m[33m)[m chore: release v1.2.3
+[33mc7db32a[m chore: release v1.2.2
+[33mafdcb6a[m Merge pull request #4 from Fabiopf02/fix/build
+[33mcb961f2[m[33m ([m[1;31morigin/fix/build[m[33m)[m build: generation of umd and esm
+[33m81b9b91[m[33m ([m[1;33mtag: v1.2.2[m[33m)[m chore: release v1.2.2
+[33m8487165[m chore: update keywords and license
+[33m7315cac[m[33m ([m[1;33mtag: v1.2.1[m[33m)[m chore: release v1.2.1
+[33m1224cc1[m build: add type declaration files
+[33mee590e9[m docs: add Codecov status badge
+[33m3d2de0b[m test: fix bug check for file not found
+[33m285f9f5[m[33m ([m[1;33mtag: v1.2.0[m[33m)[m chore: release v1.2.0
+[33m8f6cfbb[m fix: incomplete string escaping
+[33mfe475e6[m docs: update README.md
+[33md3b0a1a[m fix: remove unused writeFile
+[33m89dfa12[m chore: release v1.1.0
+[33m939125a[m docs: update docs
+[33m68a3e5f[m ci: update github ci
+[33ma95df8c[m test: update/create tests
+[33mf055b73[m fix: handle unclosed tags
+[33m23a75c7[m feat: formatted currency handling
+[33m9ed339b[m feat: add methods to read files in node.js and browser
+[33m775140f[m Merge pull request #2 from Fabiopf02/ci
+[33mcadd561[m[33m ([m[1;31morigin/ci[m[33m)[m ci: update release job
+[33m9fa4c51[m[33m ([m[1;33mtag: v1.0.8[m[33m)[m chore: release v1.0.8
+[33m2115f93[m ci: update release job
+[33m181a818[m[33m ([m[1;33mtag: v1.0.7[m[33m)[m chore: release v1.0.7
+[33md4e12a6[m docs: project name update
+[33m028c8ca[m ci: update workflow
+[33m14e741b[m rename project
+[33m0ce94a5[m[33m ([m[1;33mtag: v1.0.6[m[33m)[m chore: release v1.0.6
+[33mf0f6817[m ci: fix release commits
+[33m26f291a[m[33m ([m[1;33mtag: v1.0.5[m[33m)[m chore: release v1.0.5
+[33m7db8e14[m ci: update release job
+[33m29c7b26[m chore: release v1.0.4
+[33mb209645[m ci: add release job to github
+[33mc4c7629[m style: format jsdoc
+[33ma065c50[m Merge pull request #1 from Fabiopf02/dependabot/npm_and_yarn/json5-2.2.3
+[33m9a32ec3[m build(deps): bump json5 from 2.2.1 to 2.2.3
+[33m8775727[m[33m ([m[1;33mtag: v1.0.3[m[33m)[m chore: release v1.0.3
+[33m2ed9233[m docs: format fix
+[33mfa36df9[m[33m ([m[1;33mtag: v1.0.2[m[33m)[m chore: release v1.0.2
+[33m7819889[m ci: fix test job
+[33mb21b191[m[33m ([m[1;33mtag: v1.0.1[m[33m)[m chore: release v1.0.1
+[33m2b7462d[m ci: add linting job
+[33mc6f1528[m chore: fix linting errors
+[33m3384986[m[33m ([m[1;33mtag: v1.0.0[m[33m)[m build: add sourcemap
+[33m8d73eb6[m ci: add github pipeline
+[33mbb77783[m chore: add npm config
+[33md7c2930[m docs: add documentation for package usage
+[33md21703a[m chore: update package.json
+[33m661b10b[m test: add general test
+[33md5086d1[m feat: add method to partially transform json
+[33mbc6239a[m feat: add date format options
+[33m1c76466[m Merge branch 'main' of https://github.com/Fabiopf02/ofx-ts
+[33m43d501b[m Initial commit
+[33mf94ddb3[m first commit

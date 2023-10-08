@@ -1,7 +1,7 @@
 import { Ofx } from '../src/index'
 import path from 'path'
 import fs from 'fs'
-import { blobToString } from '../src/helpers'
+import { blobToString } from '../src/common/reader'
 import './__mocks__/mockFileReader'
 
 describe('Tests in Web/Browser environment', () => {
@@ -26,7 +26,7 @@ describe('Tests in Web/Browser environment', () => {
   })
 
   test.concurrent('Should throw error with invalid blob', () => {
-    jest.mock('../src/helpers', () => ({
+    jest.mock('../src/common/reader', () => ({
       window: null,
     }))
     expect(

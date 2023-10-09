@@ -4,13 +4,14 @@ import { convertMetaDataToObject } from '../common/parse'
 import { CustomExtractor } from '../interfaces/custom-extractor.interface'
 import { Config } from '../common/config'
 import { Reader } from './reader'
+import { OfxExtractor } from './ofx-extractor'
 
 export class Extractor<T = any> implements IExtractor<T> {
   private customExtractorInstance: CustomExtractor
   private dataReaderInstance: Reader = new Reader('')
 
-  constructor(private readonly customExtractor: CustomExtractor) {
-    this.customExtractorInstance = customExtractor
+  constructor(private readonly customExtractor?: CustomExtractor) {
+    this.customExtractorInstance = customExtractor || new OfxExtractor()
     this.config({})
   }
 

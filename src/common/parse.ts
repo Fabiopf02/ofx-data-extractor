@@ -1,9 +1,23 @@
-import { END_TEXT_BANK_TRANSFER, START_TEXT_BANK_TRANSFER } from './constants'
+import {
+  BANK_SERVICE_END,
+  BANK_SERVICE_START,
+  CLOSING_TAGS_INITIALLY_IGNORED,
+  CREDIT_CARD_SERVICE_END,
+  CREDIT_CARD_SERVICE_START,
+  ELEMENT_CLOSURE_REGEX,
+  ELEMENT_OPENING_REGEX,
+  FINISH_STATEMENT_TRANSACTION,
+  OPENING_TAGS_INITIALLY_IGNORED,
+  START_STATEMENT_TRANSACION,
+} from './constants'
 import type { STRTTRN as STRTTRNType } from '../@types/ofx'
+import { ExtractorConfig } from '../@types/common'
 import { formatDate } from './date'
 
 export function fixJsonProblems(content: string) {
-  const result = content
+  return content
+    .replace(ELEMENT_CLOSURE_REGEX, value => objectEndReplacer(value, true))
+    .replace(ELEMENT_OPENING_REGEX, value => objectStartReplacer(value, true))
     .replace(/(},})/g, '}}')
     .replace(/(}")/g, '},"')
     .replace(/(},])/g, '}]')
@@ -13,7 +27,7 @@ export function fixJsonProblems(content: string) {
     .replace(/(",")/g, '",\n"')
     .replace(/,\s*}/g, '\n}')
     .replace(/(,",)/, ',')
-  return result.at(-1) === ',' ? result.slice(0, -1) : result
+    .slice(0, -1)
 }
 
 export function extractFinancialInstitutionTransactionId(fitid: string) {
@@ -36,14 +50,24 @@ export function trim(str: string) {
   return str.trim()
 }
 
-export function objectStartReplacer(param: string) {
-  if (param === START_TEXT_BANK_TRANSFER) return param
-  return param.replace(/[<]/g, '\n').replace(/[>]/g, ':{')
+export function objectStartReplacer(param: string, force = false) {
+  if (OPENING_TAGS_INITIALLY_IGNORED.includes(param) && !force) return param
+  return param.replace(/[<]/g, '\n"').replace(/[>]/g, '":{')
 }
 
-export function objectEndReplacer(param: string) {
-  if (param === END_TEXT_BANK_TRANSFER) return `\n${param}`
+export function objectEndReplacer(param: string, force = false) {
+  if (CLOSING_TAGS_INITIALLY_IGNORED.includes(param) && !force)
+    return `\n${param}`
   return '},'
+}
+
+export function configFinancialInstitutionTransactionId({
+  fitId,
+  fitValue,
+}: Pick<ExtractorConfig, 'fitId'> & { fitValue: string }) {
+  if (fitId === 'separated')
+    return extractFinancialInstitutionTransactionId(fitValue)
+  return `"${fitValue}",`
 }
 
 export function sanitizeCurrency(value: string) {
@@ -53,23 +77,98 @@ export function sanitizeCurrency(value: string) {
   return value.replace(/[,]/g, '')
 }
 
+type GetDateParams = Pick<ExtractorConfig, 'formatDate'> & {
+  dateString: string
+}
+export function getConfiguredDate({
+  dateString,
+  formatDate: format,
+}: GetDateParams) {
+  if (format) return formatDate(dateString, format)
+  return formatDate(dateString, 'y-M-d')
+}
+
+type SanitizeValueParams = ExtractorConfig & {
+  field: string
+  value: string
+}
+function sanitizeValue(params: SanitizeValueParams) {
+  let fieldValue = params.value.replace(/[{]/g, '').replace(/(},)/g, '')
+  const fieldName = params.field.replace(/['"]/g, '')
+  if (fieldName.endsWith('AMT')) fieldValue = sanitizeCurrency(fieldValue)
+  if (isDateField(fieldName))
+    fieldValue = getConfiguredDate({
+      dateString: fieldValue,
+      formatDate: params.formatDate,
+    })
+  if (fieldName === 'FITID')
+    return configFinancialInstitutionTransactionId({
+      fitId: params.fitId,
+      fitValue: fieldValue,
+    })
+  if (params.nativeTypes && isValidNumberToConvert(fieldName, fieldValue)) {
+    return `${Number(fieldValue)},`
+  }
+  return `"${fieldValue}",`
+}
+
+export function sanitize(row: string, config: ExtractorConfig) {
+  let sanitizedLine = row
+  const field = sanitizedLine.slice(0, sanitizedLine.indexOf(':'))
+  const replacer = (value: string) => sanitizeValue({ field, value, ...config })
+
+  // braces around the value
+  if (row.match(/{(\w|\W)+/)) {
+    sanitizedLine = sanitizedLine.replace(/({(\w|\W)+)$/, replacer)
+  }
+  return sanitizedLine
+}
+
 export function isValidNumberToConvert(field: string, value: string) {
   if (field.endsWith('ID') || field.endsWith('NUM')) return false
   return !isNaN(Number(value))
 }
 
-export function getBankTransferListText(ofxContent: string) {
-  const startIndex = ofxContent.indexOf(START_TEXT_BANK_TRANSFER)
+export function parseTransactions(content: string) {
+  const startIndex = content.indexOf(START_STATEMENT_TRANSACION)
   const endIndex =
-    ofxContent.lastIndexOf(END_TEXT_BANK_TRANSFER) +
-    END_TEXT_BANK_TRANSFER.length
-  const oldListText = ofxContent.substring(startIndex, endIndex)
-  const startRgx = new RegExp(START_TEXT_BANK_TRANSFER, 'g')
-  const endRgx = new RegExp(END_TEXT_BANK_TRANSFER, 'g')
+    content.lastIndexOf(FINISH_STATEMENT_TRANSACTION) +
+    FINISH_STATEMENT_TRANSACTION.length
+  const oldListText = content.substring(startIndex, endIndex)
+  const startRgx = new RegExp(START_STATEMENT_TRANSACION, 'g')
+  const endRgx = new RegExp(FINISH_STATEMENT_TRANSACTION, 'g')
   const newListText = `"STRTTRN":[${oldListText
     .replace(startRgx, '{')
     .replace(endRgx, '},')}]`
-  return { oldListText, newListText }
+  return {
+    oldListText: content,
+    newListText: content.replace(oldListText, newListText),
+  }
+}
+
+export function getBankStatementTransactionsText(ofxContent: string) {
+  const bankContent = ofxContent.substring(
+    ofxContent.indexOf(BANK_SERVICE_START),
+    ofxContent.indexOf(BANK_SERVICE_END) + BANK_SERVICE_END.length,
+  )
+  const transactions = parseTransactions(bankContent)
+  return {
+    newBankStatementTransactions: transactions.newListText,
+    oldBankStatementTransactions: transactions.oldListText,
+  }
+}
+
+export function getCreditCardStatementTransactionsText(ofxContent: string) {
+  const bankContent = ofxContent.substring(
+    ofxContent.indexOf(CREDIT_CARD_SERVICE_START),
+    ofxContent.indexOf(CREDIT_CARD_SERVICE_END) +
+      CREDIT_CARD_SERVICE_END.length,
+  )
+  const transactions = parseTransactions(bankContent)
+  return {
+    newCreditCardStatementTransactions: transactions.newListText,
+    oldCreditCardStatementTransactions: transactions.oldListText,
+  }
 }
 
 export function convertMetaDataToObject(

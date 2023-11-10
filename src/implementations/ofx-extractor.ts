@@ -1,12 +1,15 @@
 import {
   fixJsonProblems,
-  getBankTransferListText,
+  getBankStatementTransactionsText,
+  getCreditCardStatementTransactionsText,
   getTransactionsSummary,
 } from '../common/parse'
 import { OfxStructure } from '../@types/ofx'
 import { CustomExtractor } from '../interfaces/custom-extractor.interface'
 import { Config } from '../common/config'
 import { TransactionsSummary } from '../@types/common'
+import { writeFileSync } from 'fs'
+import path from 'path'
 
 export class OfxExtractor extends CustomExtractor {
   setConfig(config: Config) {
@@ -14,12 +17,21 @@ export class OfxExtractor extends CustomExtractor {
   }
 
   getBankTransferList(data: string): any {
-    const { newListText } = getBankTransferListText(
+    const { newBankStatementTransactions } = getBankStatementTransactionsText(
       this.configInstance.getPartialJsonData(data),
     )
-    const list = newListText.slice(10)
-    const fixedList = fixJsonProblems(list)
-    return JSON.parse(fixedList)
+    return JSON.parse(`{${fixJsonProblems(newBankStatementTransactions)}}`)
+      ?.BANKMSGSRSV1?.STMTTRNRS?.STMTRS?.BANKTRANLIST?.STRTTRN
+  }
+
+  getCreditCardTransferList(data: string): any {
+    const { newCreditCardStatementTransactions } =
+      getCreditCardStatementTransactionsText(
+        this.configInstance.getPartialJsonData(data),
+      )
+    return JSON.parse(
+      `{${fixJsonProblems(newCreditCardStatementTransactions)}}`,
+    )?.CREDITCARDMSGSRSV1?.CCSTMTTRNRS?.CCSTMTRS?.BANKTRANLIST?.STRTTRN
   }
 
   getTransactionsSummary(data: string) {
@@ -39,8 +51,18 @@ export class OfxExtractor extends CustomExtractor {
 
   getContent(data: string): OfxStructure {
     const ofxText = this.configInstance.getPartialJsonData(data)
-    const { newListText, oldListText } = getBankTransferListText(ofxText)
-    const result = ofxText.replace(oldListText, newListText)
+    const { newBankStatementTransactions, oldBankStatementTransactions } =
+      getBankStatementTransactionsText(ofxText)
+    const {
+      newCreditCardStatementTransactions,
+      oldCreditCardStatementTransactions,
+    } = getCreditCardStatementTransactionsText(ofxText)
+    const result = ofxText
+      .replace(
+        oldCreditCardStatementTransactions,
+        newCreditCardStatementTransactions,
+      )
+      .replace(oldBankStatementTransactions, newBankStatementTransactions)
     return JSON.parse(`{${fixJsonProblems(result)}}`)
   }
 }

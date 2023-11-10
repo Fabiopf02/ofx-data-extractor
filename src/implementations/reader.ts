@@ -24,13 +24,11 @@ export class Reader {
   }
 
   public async fromFilePath(pathname: string): Promise<Reader> {
-    const data = await fileFromPathToString(pathname)
-    return new Reader(data)
+    return new Reader(await fileFromPathToString(pathname))
   }
 
   public async fromBlob(blob: Blob): Promise<Reader> {
-    const data = await blobToString(blob)
-    return new Reader(data)
+    return new Reader(await blobToString(blob))
   }
 
   public static fromString(data: string) {
@@ -42,12 +40,10 @@ export class Reader {
   }
 
   public static async fromFilePath(pathname: string): Promise<Reader> {
-    const data = await fileFromPathToString(pathname)
-    return new Reader(data)
+    return new Reader(await fileFromPathToString(pathname))
   }
 
   public static async fromBlob(blob: Blob): Promise<Reader> {
-    const data = await blobToString(blob)
-    return new Reader(data)
+    return new Reader(await blobToString(blob))
   }
 }

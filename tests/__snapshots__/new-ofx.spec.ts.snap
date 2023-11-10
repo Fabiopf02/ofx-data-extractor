@@ -2,11 +2,12 @@
 
 exports[` 1`] = `
 {
+  "<?OFX OFXHEADER="200" VERSION="211" SECURITY="NONE" OLDFILEUID="NONE" NEWFILEUID="NONE"?>": undefined,
   "CHARSET": "1252",
   "COMPRESSION": "NONE",
   "DATA": "OFXSGML",
   "ENCODING": "UTF-8",
-  "NEWFILEUID": "NONE",
+  "NEWFILEUID": "NONE<?xml version="1.0" encoding="US-ASCII"?>",
   "OFX": {
     "BANKMSGSRSV1": {
       "STMTTRNRS": {
@@ -185,17 +186,52 @@ exports[` 1`] = `
             "DTASOF": "2018-04-29",
           },
         },
-        "TRNUID": "1",
+        "TRNUID": "0",
+      },
+    },
+    "CREDITCARDMSGSRSV1": {
+      "CCSTMTTRNRS": {
+        "CCSTMTRS": {
+          "BANKTRANLIST": {
+            "DTEND": "2005-08-31",
+            "DTSTART": "2005-08-01",
+            "STRTTRN": [
+              {
+                "DTPOSTED": "2005-08-11",
+                "FITID": "219867",
+                "NAME": "Interest Charge",
+                "TRNAMT": "-23.00",
+                "TRNTYPE": "INT",
+              },
+              {
+                "DTPOSTED": "2005-08-11",
+                "FITID": "219868",
+                "NAME": "Payment - Thank You",
+                "TRNAMT": "350.00",
+                "TRNTYPE": "CREDIT",
+              },
+            ],
+          },
+          "CCACCTFROM": {
+            "ACCTID": "123412341234",
+          },
+          "CURDEF": "USD",
+          "LEDGERBAL": {
+            "BALAMT": "-562.00",
+            "DTASOF": "2005-08-31",
+          },
+        },
+        "STATUS": {
+          "CODE": "0",
+          "SEVERITY": "INFO",
+        },
+        "TRNUID": "0",
       },
     },
     "SIGNONMSGSRSV1": {
       "SONRS": {
-        "DTSERVER": "2018-04-30",
-        "FI": {
-          "FID": "364",
-          "ORG": "Gerencianet",
-        },
-        "LANGUAGE": "POR",
+        "DTSERVER": "2005-08-31",
+        "LANGUAGE": "ENG",
         "STATUS": {
           "CODE": "0",
           "SEVERITY": "INFO",
@@ -390,17 +426,52 @@ exports[`Tests in the Node.js environment Should read file path 1`] = `
             "DTASOF": "2018-04-29",
           },
         },
-        "TRNUID": "1",
+        "TRNUID": "0",
+      },
+    },
+    "CREDITCARDMSGSRSV1": {
+      "CCSTMTTRNRS": {
+        "CCSTMTRS": {
+          "BANKTRANLIST": {
+            "DTEND": "2005-08-31",
+            "DTSTART": "2005-08-01",
+            "STRTTRN": [
+              {
+                "DTPOSTED": "2005-08-11",
+                "FITID": "219867",
+                "NAME": "Interest Charge",
+                "TRNAMT": -23,
+                "TRNTYPE": "INT",
+              },
+              {
+                "DTPOSTED": "2005-08-11",
+                "FITID": "219868",
+                "NAME": "Payment - Thank You",
+                "TRNAMT": 350,
+                "TRNTYPE": "CREDIT",
+              },
+            ],
+          },
+          "CCACCTFROM": {
+            "ACCTID": "123412341234",
+          },
+          "CURDEF": "USD",
+          "LEDGERBAL": {
+            "BALAMT": -562,
+            "DTASOF": "2005-08-31",
+          },
+        },
+        "STATUS": {
+          "CODE": 0,
+          "SEVERITY": "INFO",
+        },
+        "TRNUID": "0",
       },
     },
     "SIGNONMSGSRSV1": {
       "SONRS": {
-        "DTSERVER": "2018-04-30",
-        "FI": {
-          "FID": "364",
-          "ORG": "Gerencianet",
-        },
-        "LANGUAGE": "POR",
+        "DTSERVER": "2005-08-31",
+        "LANGUAGE": "ENG",
         "STATUS": {
           "CODE": 0,
           "SEVERITY": "INFO",

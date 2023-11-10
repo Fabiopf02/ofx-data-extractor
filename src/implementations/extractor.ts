@@ -1,10 +1,15 @@
-import type { ExtractorConfig, MetaData } from '../@types/common'
+import type {
+  ExtractorConfig,
+  MetaData,
+  TransactionsSummary,
+} from '../@types/common'
 import { IExtractor } from '../interfaces/extractor.interface'
 import { convertMetaDataToObject } from '../common/parse'
 import { CustomExtractor } from '../interfaces/custom-extractor.interface'
 import { Config } from '../common/config'
 import { Reader } from './reader'
 import { OfxExtractor } from './ofx-extractor'
+import { OfxResponse, OfxStructure, STRTTRN } from '../@types/ofx'
 
 export class Extractor<T = any> implements IExtractor<T> {
   private customExtractorInstance: CustomExtractor
@@ -21,8 +26,7 @@ export class Extractor<T = any> implements IExtractor<T> {
   }
 
   config(config: ExtractorConfig): this {
-    const configInstance = new Config(config)
-    this.customExtractorInstance.setConfig(configInstance)
+    this.customExtractorInstance.setConfig(new Config(config))
     return this
   }
 
@@ -37,29 +41,35 @@ export class Extractor<T = any> implements IExtractor<T> {
     ) as MetaData
   }
 
-  getBankTransferList() {
+  getBankTransferList(): STRTTRN[] {
     return this.customExtractorInstance.getBankTransferList(
       this.dataReaderInstance.getData(),
     )
   }
 
-  getTransactionsSummary() {
+  getCreditCardTransferList(): STRTTRN[] {
+    return this.customExtractorInstance.getCreditCardTransferList(
+      this.dataReaderInstance.getData(),
+    )
+  }
+
+  getTransactionsSummary(): TransactionsSummary {
     return this.customExtractorInstance.getTransactionsSummary(
       this.dataReaderInstance.getData(),
     )
   }
 
-  getContent() {
+  getContent(): OfxStructure {
     return this.customExtractorInstance.getContent(
       this.dataReaderInstance.getData(),
-    )
+    ) as OfxStructure
   }
 
-  toJson(): T {
+  toJson() {
     const ofxMetaDataResult = this.getHeaders()
     const ofxContentResult = this.customExtractorInstance.getContent(
       this.dataReaderInstance.getData(),
     )
-    return { ...ofxMetaDataResult, ...ofxContentResult } as T
+    return { ...ofxMetaDataResult, ...ofxContentResult } as OfxResponse
   }
 }

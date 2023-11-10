@@ -20,14 +20,14 @@ export class Config {
     return this.internConfig
   }
 
-  sanitize(row: string) {
+  sanitizeRow(row: string) {
     return sanitize(row, this.internConfig)
   }
 
   getPartialJsonData(data: string) {
     const [_, ofxContentText] = data.split('<OFX>')
     const ofxContent = '<OFX>' + ofxContentText
-    const { sanitize } = this
+    const { sanitizeRow } = this
     /**
      * Use replace first for closing tag so there is no conflict in `objectStartReplacer`
      */
@@ -37,7 +37,7 @@ export class Config {
       .split('\n')
       .map(trim)
       .filter(Boolean)
-      .map(sanitize, this)
+      .map(sanitizeRow, this)
       .join('')
   }
 }

@@ -5,11 +5,6 @@ function separatePartsOfDate(date: string) {
   const hour = date.slice(8, 10)
   const minutes = date.slice(10, 12)
   const seconds = date.slice(12, 14)
-  const [offset, timezone] = date
-    .slice(14)
-    .replace('[', '')
-    .replace(']', '')
-    .split(':')
   return {
     yyyy: year,
     yy: year.slice(2),
@@ -24,8 +19,6 @@ function separatePartsOfDate(date: string) {
     m: minutes,
     ss: seconds,
     s: seconds,
-    O: offset,
-    TZ: timezone,
   }
 }
 

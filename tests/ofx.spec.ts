@@ -70,14 +70,7 @@ describe('Tests in the Node.js environment', () => {
     const date = ofx
       .config({ formatDate: 'd/M/y' })
       .getBankTransferList()[0].DTPOSTED
-    expect('09/03/2018').toBe(date)
-  })
-
-  test.concurrent('It should correctly return the offset and timezone', () => {
-    const date = ofx
-      .config({ formatDate: 'O TZ' })
-      .getBankTransferList()[0].DTPOSTED
-    expect('-3 BRT').toBe(date)
+    expect(date).toBe('09/03/2018')
   })
 
   test.concurrent('It should correctly return the offset and timezone', () => {

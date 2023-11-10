@@ -24,6 +24,7 @@ describe('Tests in the Node.js environment', () => {
   })
 
   test('Should read Buffer content', async () => {
+    const extractor = new Extractor()
     const data = Reader.fromBuffer(
       fs.readFileSync(path.resolve(__dirname, 'example.ofx')),
     )
@@ -37,13 +38,28 @@ describe('Tests in the Node.js environment', () => {
     expect(headers.VERSION).toBe(102)
   })
 
-  test.concurrent('It should return the correct amount of transactions', () => {
-    const data = Reader.fromBuffer(file)
-    expect(extractor.data(data).getBankTransferList()).toHaveLength(18)
-  })
+  test.concurrent(
+    'It should return the correct amount of transactions: bank transfer',
+    () => {
+      const data = new Reader().fromBuffer(file)
+      expect(extractor.data(data).getBankTransferList()).toHaveLength(18)
+    },
+  )
+
+  test.concurrent(
+    'It should return the correct amount of transactions: credit card',
+    async () => {
+      const data = new Reader()
+      expect(
+        extractor
+          .data(await data.fromFilePath(path.resolve(__dirname, 'example.ofx')))
+          .getCreditCardTransferList(),
+      ).toHaveLength(2)
+    },
+  )
 
   test.concurrent('Should correctly return transaction summary', () => {
-    const data = Reader.fromBuffer(file)
+    const data = Reader.fromString(file.toString())
     const summary = extractor.data(data).getTransactionsSummary()
     expect(summary.credit).toBe(669.6)
     expect(summary.debit.toFixed(1)).toBe('34.1')
@@ -84,15 +100,7 @@ describe('Tests in the Node.js environment', () => {
       .data(reader.fromBuffer(file))
       .config({ formatDate: 'd/M/y' })
       .getBankTransferList()[0].DTPOSTED
-    expect('09/03/2018').toBe(date)
-  })
-
-  test.concurrent('It should correctly return the offset and timezone', () => {
-    const date = extractor
-      .data(Reader.fromString(file.toString()))
-      .config({ formatDate: 'O TZ' })
-      .getBankTransferList()[0].DTPOSTED
-    expect('-3 BRT').toBe(date)
+    expect(date).toBe('09/03/2018')
   })
 
   test.concurrent('It should correctly return the offset and timezone', () => {

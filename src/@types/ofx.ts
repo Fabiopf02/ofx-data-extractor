@@ -44,6 +44,36 @@ export type FINANCIAL_INSTITUTION = {
   FID: string
 }
 
+export type Bank = {
+  STMTTRNRS: {
+    TRNUID: number
+    STATUS: Status
+    STMTRS: {
+      CURDEF: string
+      BANKACCTFROM: BankAccountFrom
+      BANKTRANLIST: BankTransferList
+      LEDGERBAL: LedGerBal
+      MKTGINFO: string
+    }
+  }
+}
+
+export type CreditCard = {
+  CCSTMTTRNRS: {
+    TRNUID: number
+    STATUS: Status
+    CCSTMTRS: {
+      CURDEF: string
+      CCACCTFROM: {
+        ACCTID: string
+      }
+      BANKTRANLIST: BankTransferList
+      LEDGERBAL: LedGerBal
+      MKTGINFO: string
+    }
+  }
+}
+
 export type OfxStructure = {
   OFX: {
     SIGNONMSGSRSV1: {
@@ -55,19 +85,8 @@ export type OfxStructure = {
         FI: FINANCIAL_INSTITUTION
       }
     }
-    BANKMSGSRSV1: {
-      STMTTRNRS: {
-        TRNUID: number
-        STATUS: Status
-        STMTRS: {
-          CURDEF: string
-          BANKACCTFROM: BankAccountFrom
-          BANKTRANLIST: BankTransferList
-          LEDGERBAL: LedGerBal
-          MKTGINFO: string
-        }
-      }
-    }
+    BANKMSGSRSV1: Bank
+    CREDITCARDMSGSRSV1: CreditCard
   }
 }
 

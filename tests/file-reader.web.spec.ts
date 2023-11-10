@@ -1,4 +1,4 @@
-import { Ofx } from '../src/index'
+import { Ofx, Reader } from '../src/index'
 import path from 'path'
 import fs from 'fs'
 import { blobToString } from '../src/common/reader'
@@ -25,12 +25,12 @@ describe('Tests in Web/Browser environment', () => {
     expect(transfer.TRNAMT).toBe(74.4)
   })
 
-  test.concurrent('Should throw error with invalid blob', () => {
+  test.concurrent('Should throw error with invalid blob', async () => {
     jest.mock('../src/common/reader', () => ({
       window: null,
     }))
-    expect(
-      async () => await Ofx.fromBlob('invalid' as unknown as Blob),
+    expect(async () =>
+      new Reader().fromBlob('invalid' as unknown as Blob),
     ).rejects.toThrow('Invalid blob')
   })
 })

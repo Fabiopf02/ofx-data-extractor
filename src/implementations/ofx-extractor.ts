@@ -8,8 +8,6 @@ import { OfxStructure } from '../@types/ofx'
 import { CustomExtractor } from '../interfaces/custom-extractor.interface'
 import { Config } from '../common/config'
 import { TransactionsSummary } from '../@types/common'
-import { writeFileSync } from 'fs'
-import path from 'path'
 
 export class OfxExtractor extends CustomExtractor {
   setConfig(config: Config) {

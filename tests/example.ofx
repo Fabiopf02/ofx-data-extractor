@@ -131,7 +131,7 @@ NEWFILEUID:NONE<?xml version="1.0" encoding="US-ASCII"?>
             <TRNAMT>-3,49</TRNAMT>
             <FITID>2018041517301001047000000065696377</FITID>
             <CHECKNUM>000000065696377</CHECKNUM>
-            <MEMO>Tarifa repasse: 29533821 de HA</MEMO>
+            <MEMO>Tarifa repasse: 29533821 de HA\\</MEMO>
           </STMTTRN>
           <STMTTRN>
             <TRNTYPE>CREDIT</TRNTYPE>
@@ -140,14 +140,14 @@ NEWFILEUID:NONE<?xml version="1.0" encoding="US-ASCII"?>
             <FITID>2018042606102002046000000066643667</FITID>
             <CHECKNUM>000000066643667</CHECKNUM>
             <REFNUM>2002046000000030830691
-            <MEMO>Repasse pagamento: 30830691 de Duque</MEMO>
+            <MEMO>Repasse pagamento: 30830691 de Duque\</MEMO>
           </STMTTRN><STMTTRN>
             <TRNTYPE>DEBIT</TRNTYPE>
             <DTPOSTED>20180429120000[-3:BRT]
             <TRNAMT>-3,34</TRNAMT>
             <FITID>2018042606101001046000000066643670</FITID>
             <CHECKNUM>000000066643670</CHECKNUM>
-            <MEMO>Tarifa repasse: 30830691 de Duque</MEMO>
+            <MEMO>\Tarifa repasse: 30830691 de \\Du\que</MEMO>
           </STMTTRN>
         </BANKTRANLIST>
         <LEDGERBAL>

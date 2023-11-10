@@ -16,6 +16,7 @@ import { formatDate } from './date'
 
 export function fixJsonProblems(content: string) {
   return content
+    .replace(/(\\)/g, '\\\\')
     .replace(ELEMENT_CLOSURE_REGEX, value => objectEndReplacer(value, true))
     .replace(ELEMENT_OPENING_REGEX, value => objectStartReplacer(value, true))
     .replace(/(},})/g, '}}')

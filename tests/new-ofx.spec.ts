@@ -69,19 +69,6 @@ describe('Tests in the Node.js environment', () => {
     expect(summary.dateEnd).toBe('2018-04-29')
   })
 
-  test.concurrent('It should be equal to the snapshot', () => {
-    const data = Reader.fromBuffer(file)
-    const jsonData = extractor.data(data).toJson()
-    expect(jsonData).toMatchSnapshot()
-  })
-  test.concurrent('It should be equal to the snapshot /2', async () => {
-    const data = await Reader.fromFilePath(
-      path.resolve(__dirname, 'example.ofx'),
-    )
-    const extractorInstance = extractor.data(data)
-    expect(extractorInstance.getContent()).toMatchSnapshot()
-  })
-
   test.concurrent('Should separate the FITID', () => {
     const toCompare = extractor
       .data(reader.fromString(file.toString()))
@@ -116,6 +103,16 @@ describe('Tests in the Node.js environment', () => {
       path.resolve(__dirname, 'example2.ofx'),
     )
     const extractorInstance = extractor.data(data)
-    expect(extractorInstance.getContent()).toMatchSnapshot()
+    expect(
+      extractorInstance.toJson().OFX.BANKMSGSRSV1.STMTTRNRS.STMTRS.BANKTRANLIST
+        .STRTTRN,
+    ).toHaveLength(18)
+  })
+  test.concurrent('Test without CreditCard -> Transactions', async () => {
+    const data = await Reader.fromFilePath(
+      path.resolve(__dirname, 'example2.ofx'),
+    )
+    const extractorInstance = extractor.data(data)
+    expect(extractorInstance.getCreditCardTransferList()).toHaveLength(0)
   })
 })

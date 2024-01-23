@@ -160,6 +160,12 @@ export function getBankStatementTransactionsText(ofxContent: string) {
 }
 
 export function getCreditCardStatementTransactionsText(ofxContent: string) {
+  const hasCreditCardTag = ofxContent.indexOf(CREDIT_CARD_SERVICE_START) > 0
+  if (!hasCreditCardTag)
+    return {
+      newCreditCardStatementTransactions: null,
+      oldCreditCardStatementTransactions: null,
+    }
   const bankContent = ofxContent.substring(
     ofxContent.indexOf(CREDIT_CARD_SERVICE_START),
     ofxContent.indexOf(CREDIT_CARD_SERVICE_END) +

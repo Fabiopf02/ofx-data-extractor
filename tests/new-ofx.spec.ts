@@ -110,4 +110,12 @@ describe('Tests in the Node.js environment', () => {
       .getBankTransferList()[0]
     expect(typeof transfer.TRNAMT).toBe('number')
   })
+
+  test.concurrent('Test without CreditCard', async () => {
+    const data = await Reader.fromFilePath(
+      path.resolve(__dirname, 'example2.ofx'),
+    )
+    const extractorInstance = extractor.data(data)
+    expect(extractorInstance.getContent()).toMatchSnapshot()
+  })
 })

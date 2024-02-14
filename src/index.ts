@@ -1,9 +1,5 @@
 export { Ofx } from './older-implementation/main'
-export {
-  blobToString,
-  bufferToString,
-  fileFromPathToString,
-} from './common/reader'
+export { blobToString, bufferToString } from './common/reader'
 export { fixJsonProblems } from './common/parse'
 export { formatDate } from './common/date'
 export type { IExtractor } from './interfaces/extractor.interface'

@@ -1,8 +1,4 @@
-import {
-  blobToString,
-  bufferToString,
-  fileFromPathToString,
-} from '../common/reader'
+import { blobToString, bufferToString } from '../common/reader'
 
 export class Reader {
   private dataRead: string = ''
@@ -23,10 +19,6 @@ export class Reader {
     return new Reader(bufferToString(data))
   }
 
-  public async fromFilePath(pathname: string): Promise<Reader> {
-    return new Reader(await fileFromPathToString(pathname))
-  }
-
   public async fromBlob(blob: Blob): Promise<Reader> {
     return new Reader(await blobToString(blob))
   }
@@ -37,10 +29,6 @@ export class Reader {
 
   public static fromBuffer(data: Buffer) {
     return new Reader(bufferToString(data))
-  }
-
-  public static async fromFilePath(pathname: string): Promise<Reader> {
-    return new Reader(await fileFromPathToString(pathname))
   }
 
   public static async fromBlob(blob: Blob): Promise<Reader> {

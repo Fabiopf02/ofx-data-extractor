@@ -21,8 +21,7 @@ yarn add ofx-data-extractor
 ### Methods
 The `Ofx` class provides the following methods:
 
-- `async fromBuffer(data: Buffer)`: Used to read files on the node. Returns the methods
-- `async fromFilePath(path: string)`: Used to read files on the node. Returns the methods below.
+- `fromBuffer(data: Buffer)`: Used to read files on the node. Returns the methods
 - `fromBlob(data: Blob)`: Used to read files in the browser. Returns the methods below.
 - `config(options: OfxConfig)`: Used for formatting the generated json.`
 - `getHeaders(): OFXMetaData`: Returns the metadata section of the OFX file as an object.
@@ -65,8 +64,6 @@ import fs from 'fs'
 
 const file = await fs.readFile('/path/to/file')
 const ofx = await Ofx.fromBuffer(file)
-// OR
-const ofx = await Ofx.fromFilePath('/path/to/file')
 
 const ofxResponse = ofx.toJson()
 console.log(ofxResponse)

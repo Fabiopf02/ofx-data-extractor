@@ -1,5 +1,5 @@
 import path from 'path'
-import fs from 'fs'
+import fs, { readFileSync } from 'fs'
 import { Extractor } from '../src/implementations/extractor'
 import { OfxExtractor } from '../src/implementations/ofx-extractor'
 import { Reader } from '../src/implementations/reader'
@@ -10,18 +10,6 @@ const extractor = new Extractor(ofxExtractor)
 
 describe('Tests in the Node.js environment', () => {
   const file = fs.readFileSync(path.resolve(__dirname, 'example.ofx'))
-
-  test('Should read file path', async () => {
-    const data = await Reader.fromFilePath(
-      path.resolve(__dirname, 'example.ofx'),
-    )
-    const ofx = extractor.data(data)
-    const headers = ofx.config({ nativeTypes: false }).getHeaders()
-    expect(headers.OFXHEADER).toBe('100')
-    expect(headers.CHARSET).toBe('1252')
-    expect(headers.ENCODING).toBe('UTF-8')
-    expect(headers.VERSION).toBe('102')
-  })
 
   test('Should read Buffer content', async () => {
     const extractor = new Extractor()
@@ -49,11 +37,10 @@ describe('Tests in the Node.js environment', () => {
   test.concurrent(
     'It should return the correct amount of transactions: credit card',
     async () => {
+      const file = readFileSync(path.resolve(__dirname, 'example.ofx'))
       const data = new Reader()
       expect(
-        extractor
-          .data(await data.fromFilePath(path.resolve(__dirname, 'example.ofx')))
-          .getCreditCardTransferList(),
+        extractor.data(data.fromBuffer(file)).getCreditCardTransferList(),
       ).toHaveLength(2)
     },
   )
@@ -99,20 +86,16 @@ describe('Tests in the Node.js environment', () => {
   })
 
   test.concurrent('Test without CreditCard', async () => {
-    const data = await Reader.fromFilePath(
-      path.resolve(__dirname, 'example2.ofx'),
-    )
-    const extractorInstance = extractor.data(data)
+    const file = readFileSync(path.resolve(__dirname, 'example2.ofx'))
+    const extractorInstance = extractor.data(Reader.fromString(file.toString()))
     expect(
       extractorInstance.toJson().OFX.BANKMSGSRSV1.STMTTRNRS.STMTRS.BANKTRANLIST
         .STRTTRN,
     ).toHaveLength(18)
   })
   test.concurrent('Test without CreditCard -> Transactions', async () => {
-    const data = await Reader.fromFilePath(
-      path.resolve(__dirname, 'example2.ofx'),
-    )
-    const extractorInstance = extractor.data(data)
+    const file = readFileSync(path.resolve(__dirname, 'example2.ofx'))
+    const extractorInstance = extractor.data(Reader.fromBuffer(file))
     expect(extractorInstance.getCreditCardTransferList()).toHaveLength(0)
   })
 })

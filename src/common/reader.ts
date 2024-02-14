@@ -2,18 +2,6 @@ export function bufferToString(data: Buffer) {
   return data.toString()
 }
 
-export async function fileFromPathToString(pathname: string) {
-  const fileData: string = await new Promise((resolve, reject) => {
-    import('fs').then(fs => {
-      return fs.readFile(pathname, (err, data) => {
-        if (err) reject(err)
-        else resolve(data.toString())
-      })
-    })
-  })
-  return fileData
-}
-
 export async function blobToString(blob: Blob): Promise<string> {
   const data: string = await new Promise((resolve, reject) => {
     if (typeof window !== 'undefined' && window.FileReader) {

@@ -17,11 +17,6 @@ export class Ofx {
     return new Ofx(Reader.fromBuffer(data).getData())
   }
 
-  static async fromFilePath(pathname: string) {
-    const reader = await Reader.fromFilePath(pathname)
-    return new Ofx(reader.getData())
-  }
-
   static async fromBlob(blob: Blob): Promise<Ofx> {
     const reader = await Reader.fromBlob(blob)
     return new Ofx(reader.getData())

@@ -1,10 +1,4 @@
-import { getConfiguredDate, isValidNumberToConvert, sanitize } from './parse'
-import { formatDate } from './date'
-import {
-  extractFinancialInstitutionTransactionId,
-  isDateField,
-  sanitizeCurrency,
-} from './parse'
+import { sanitize } from './parse'
 import { ExtractorConfig } from '../@types/common'
 import { ELEMENT_CLOSURE_REGEX, ELEMENT_OPENING_REGEX } from './constants'
 import { objectStartReplacer, objectEndReplacer, trim } from './parse'

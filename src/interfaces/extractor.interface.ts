@@ -3,7 +3,7 @@ import {
   ExtractorConfig,
   MetaData,
   TransactionsSummary,
-} from 'src/@types/common'
+} from '../@types/common'
 
 export interface IExtractor<T> {
   config(config: ExtractorConfig): this

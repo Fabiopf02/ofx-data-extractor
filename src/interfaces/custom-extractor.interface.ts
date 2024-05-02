@@ -1,4 +1,4 @@
-import { Config } from 'src/common/config'
+import { Config } from '../common/config'
 import { TransactionsSummary } from '../@types/common'
 
 export abstract class CustomExtractor {

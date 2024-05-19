@@ -32,11 +32,8 @@ export class Extractor<T = any> implements IExtractor<T> {
 
   getHeaders(): MetaData {
     const [metaDataString] = this.dataReaderInstance.getData().split('<OFX>')
-    const metaDataList = metaDataString.split('\n')
-    const validate = (line: string) => !!line.trim().length
-    const validatedMetaDataList = metaDataList.filter(validate)
     return convertMetaDataToObject(
-      validatedMetaDataList,
+      metaDataString.split('\n').filter(line => !!line.trim().length),
       !!this.customExtractorInstance.configInstance.getConfig().nativeTypes,
     ) as MetaData
   }

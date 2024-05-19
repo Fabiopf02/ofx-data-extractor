@@ -31,25 +31,16 @@ export function fixJsonProblems(content: string) {
     .slice(0, -1)
 }
 
-export function extractFinancialInstitutionTransactionId(fitid: string) {
-  const dateText = fitid.slice(0, 12)
-  const transactionCode = fitid.slice(12, 19)
-  const protocol = fitid.slice(19)
-  const resultObject = {
-    date: dateText,
-    transactionCode,
-    protocol,
-  }
-  return JSON.stringify(resultObject)
-}
+export const extractFinancialInstitutionTransactionId = (fitid: string) =>
+  JSON.stringify({
+    date: fitid.slice(0, 12),
+    transactionCode: fitid.slice(12, 19),
+    protocol: fitid.slice(19),
+  })
 
-export function isDateField(field: string) {
-  return field.startsWith('DT')
-}
+export const isDateField = (field: string) => field.startsWith('DT')
 
-export function trim(str: string) {
-  return str.trim()
-}
+export const trim = (str: string) => str.trim()
 
 export function objectStartReplacer(param: string, force = false) {
   if (OPENING_TAGS_INITIALLY_IGNORED.includes(param) && !force) return param
@@ -72,9 +63,8 @@ export function configFinancialInstitutionTransactionId({
 }
 
 export function sanitizeCurrency(value: string) {
-  const comma = value.search(',')
-  const point = value.search('.')
-  if (comma > point) return value.replace(/[.]/g, '').replace(/[,]/g, '.')
+  if (value.search(',') > value.search('.'))
+    return value.replace(/[.]/g, '').replace(/[,]/g, '.')
   return value.replace(/[,]/g, '')
 }
 
@@ -83,10 +73,9 @@ type GetDateParams = Pick<ExtractorConfig, 'formatDate'> & {
 }
 export function getConfiguredDate({
   dateString,
-  formatDate: format,
+  formatDate: format = 'y-M-d',
 }: GetDateParams) {
-  if (format) return formatDate(dateString, format)
-  return formatDate(dateString, 'y-M-d')
+  return formatDate(dateString, format)
 }
 
 type SanitizeValueParams = ExtractorConfig & {
@@ -115,12 +104,15 @@ function sanitizeValue(params: SanitizeValueParams) {
 
 export function sanitize(row: string, config: ExtractorConfig) {
   let sanitizedLine = row
-  const field = sanitizedLine.slice(0, sanitizedLine.indexOf(':'))
-  const replacer = (value: string) => sanitizeValue({ field, value, ...config })
-
   // braces around the value
   if (row.match(/{(\w|\W)+/)) {
-    sanitizedLine = sanitizedLine.replace(/({(\w|\W)+)$/, replacer)
+    sanitizedLine = sanitizedLine.replace(/({(\w|\W)+)$/, (value: string) =>
+      sanitizeValue({
+        field: sanitizedLine.slice(0, sanitizedLine.indexOf(':')),
+        value,
+        ...config,
+      }),
+    )
   }
   return sanitizedLine
 }
@@ -148,11 +140,12 @@ export function parseTransactions(content: string) {
 }
 
 export function getBankStatementTransactionsText(ofxContent: string) {
-  const bankContent = ofxContent.substring(
-    ofxContent.indexOf(BANK_SERVICE_START),
-    ofxContent.indexOf(BANK_SERVICE_END) + BANK_SERVICE_END.length,
+  const transactions = parseTransactions(
+    ofxContent.substring(
+      ofxContent.indexOf(BANK_SERVICE_START),
+      ofxContent.indexOf(BANK_SERVICE_END) + BANK_SERVICE_END.length,
+    ),
   )
-  const transactions = parseTransactions(bankContent)
   return {
     newBankStatementTransactions: transactions.newListText,
     oldBankStatementTransactions: transactions.oldListText,

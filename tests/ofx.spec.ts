@@ -6,17 +6,7 @@ describe('Tests in the Node.js environment', () => {
   const file = fs.readFileSync(path.resolve(__dirname, 'example.ofx'))
   const ofx = Ofx.fromBuffer(file)
 
-  test('Deveria ler conteúdo do Buffer', async () => {
-    const file = fs.readFileSync(path.resolve(__dirname, 'example.ofx'))
-    const ofx = Ofx.fromBuffer(file)
-    const headers = ofx.getHeaders()
-    expect(headers.OFXHEADER).toBe('100')
-    expect(headers.CHARSET).toBe('1252')
-    expect(headers.ENCODING).toBe('UTF-8')
-    expect(headers.VERSION).toBe('102')
-  })
-
-  test('Deveria ler conteúdo do Buffer', async () => {
+  test('It should read Buffer content', async () => {
     const file = fs.readFileSync(path.resolve(__dirname, 'example.ofx'))
     const ofx = Ofx.fromBuffer(file)
     const headers = ofx.getHeaders()

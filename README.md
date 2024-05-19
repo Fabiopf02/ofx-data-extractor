@@ -26,6 +26,7 @@ The `Ofx` class provides the following methods:
 - `config(options: OfxConfig)`: Used for formatting the generated json.`
 - `getHeaders(): OFXMetaData`: Returns the metadata section of the OFX file as an object.
 - `getBankTransferList(): Pick<BankTransferList, 'STRTTRN'>`: Returns a list of bank transfer transactions as an object.
+- `getCreditCardTransferList(): Pick<BankTransferList, 'STRTTRN'>`: Returns a list of credit card transactions as an object.
 - `getTransactionsSummary()`: Object: Returns a summary of transactions for a bank statement as an object.
 - `getContent(): OfxStructure`: Returns the OFX file content as an object.
 - `toJson(): OfxResponse`: Returns the entire OFX file content as a JSON object.

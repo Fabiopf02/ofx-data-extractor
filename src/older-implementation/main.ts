@@ -35,6 +35,10 @@ export class Ofx {
     return this.extractor.getBankTransferList()
   }
 
+  getCreditCardTransferList(): STRTTRN[] {
+    return this.extractor.getCreditCardTransferList()
+  }
+
   getTransactionsSummary() {
     return this.extractor.getTransactionsSummary()
   }

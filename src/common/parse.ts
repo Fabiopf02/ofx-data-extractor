@@ -140,6 +140,12 @@ export function parseTransactions(content: string) {
 }
 
 export function getBankStatementTransactionsText(ofxContent: string) {
+  const hasBankTransferTag = ofxContent.indexOf(BANK_SERVICE_START) > 0
+  if (!hasBankTransferTag)
+    return {
+      newBankStatementTransactions: null,
+      oldBankStatementTransactions: null,
+    }
   const transactions = parseTransactions(
     ofxContent.substring(
       ofxContent.indexOf(BANK_SERVICE_START),

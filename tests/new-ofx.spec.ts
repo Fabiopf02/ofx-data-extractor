@@ -98,4 +98,10 @@ describe('Tests in the Node.js environment', () => {
     const extractorInstance = extractor.data(Reader.fromBuffer(file))
     expect(extractorInstance.getCreditCardTransferList()).toHaveLength(0)
   })
+
+  test.concurrent('Test without BANKMSGSRSV1 -> Transactions', async () => {
+    const file = readFileSync(path.resolve(__dirname, 'example3.ofx'))
+    const extractorInstance = extractor.data(Reader.fromBuffer(file))
+    expect(extractorInstance.getBankTransferList()).toHaveLength(0)
+  })
 })

@@ -1,0 +1,58 @@
+OFXHEADER:100
+DATA:OFXSGML
+VERSION:102
+SECURITY:NONE
+ENCODING:USASCII
+CHARSET:1252
+COMPRESSION:NONE
+OLDFILEUID:NONE
+NEWFILEUID:NONE<?xml version="1.0" encoding="US-ASCII"?>
+<?OFX OFXHEADER="200" VERSION="211" SECURITY="NONE" OLDFILEUID="NONE" NEWFILEUID="NONE"?>
+<OFX>
+  <SIGNONMSGSRSV1>
+    <SONRS>
+            <STATUS>
+                <CODE>0</CODE>
+                <SEVERITY>INFO</SEVERITY>
+            </STATUS>
+            <DTSERVER>20240517120000[0:GMT]</DTSERVER>
+            <LANGUAGE>ENG</LANGUAGE>            
+        </SONRS>
+    </SIGNONMSGSRSV1>
+     
+    <CREDITCARDMSGSRSV1>
+        <CCSTMTTRNRS>
+            <TRNUID>1</TRNUID>
+            <STATUS>
+                <CODE>0</CODE>
+                <SEVERITY>INFO</SEVERITY>
+                <MESSAGE>Success</MESSAGE>
+            </STATUS>
+            <CCSTMTRS>
+                <CURDEF>USD</CURDEF>
+                <CCACCTFROM>
+                    <ACCTID>111111-1111</ACCTID>
+                </CCACCTFROM>
+                <BANKTRANLIST>
+                    <DTSTART>20240517120000[0:GMT]</DTSTART>
+                    <DTEND>20240517120000[0:GMT]</DTEND>
+                    <STMTTRN>
+                        <TRNTYPE>DEBIT</TRNTYPE>
+                        <DTPOSTED>20240515120000[0:GMT]</DTPOSTED>
+                        <TRNAMT>-11.79</TRNAMT>
+                        <FITID>111111</FITID>
+                        <NAME>Example</NAME>
+                    </STMTTRN>
+                </BANKTRANLIST>
+                <LEDGERBAL>
+                    <BALAMT>-1.44</BALAMT>
+                    <DTASOF>20240517120000[0:GMT]</DTASOF>
+                </LEDGERBAL>
+                <AVAILBAL>
+                    <BALAMT>1.31</BALAMT>
+                    <DTASOF>20240517120000[0:GMT]</DTASOF>
+                </AVAILBAL>
+            </CCSTMTRS>
+        </CCSTMTTRNRS>
+    </CREDITCARDMSGSRSV1>
+</OFX>

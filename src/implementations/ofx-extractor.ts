@@ -18,6 +18,7 @@ export class OfxExtractor extends CustomExtractor {
     const { newBankStatementTransactions } = getBankStatementTransactionsText(
       this.configInstance.getPartialJsonData(data),
     )
+    if (!newBankStatementTransactions) return []
     return JSON.parse(`{${fixJsonProblems(newBankStatementTransactions)}}`)
       ?.BANKMSGSRSV1?.STMTTRNRS?.STMTRS?.BANKTRANLIST?.STRTTRN
   }
@@ -56,10 +57,13 @@ export class OfxExtractor extends CustomExtractor {
       newCreditCardStatementTransactions,
       oldCreditCardStatementTransactions,
     } = getCreditCardStatementTransactionsText(ofxText)
-    let result = ofxText.replace(
-      oldBankStatementTransactions,
-      newBankStatementTransactions,
-    )
+    let result = ofxText
+    if (newBankStatementTransactions) {
+      result = result.replace(
+        oldBankStatementTransactions,
+        newBankStatementTransactions,
+      )
+    }
     if (newCreditCardStatementTransactions) {
       result = result.replace(
         oldCreditCardStatementTransactions,

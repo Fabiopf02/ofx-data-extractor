@@ -104,7 +104,7 @@ function sanitizeValue(params: SanitizeValueParams) {
 
 export function sanitize(row: string, config: ExtractorConfig) {
   let sanitizedLine = row
-  // braces around the value
+  // braces around the values
   if (row.match(/{(\w|\W)+/)) {
     sanitizedLine = sanitizedLine.replace(/({(\w|\W)+)$/, (value: string) =>
       sanitizeValue({
@@ -177,14 +177,34 @@ export function getCreditCardStatementTransactionsText(ofxContent: string) {
   }
 }
 
+export function extractMetaDataFromXml(data: string[]) {
+  let result: string[] = []
+  for (const tag of data) {
+    result.push(
+      ...tag
+        .replace('<?xml', ' ')
+        .replace('<?OFX', ' ')
+        .replace('?>', ' ')
+        .split(' ')
+        .filter(Boolean)
+        .map(trim)
+        .map(line => line.replace('=', ':').replace(/["]/g, '')),
+    )
+  }
+  return result
+}
+
 export function convertMetaDataToObject(
   stringList: string[],
   nativeTypes: boolean,
 ) {
   const result: { [key: string]: any } = {}
+  if (stringList.join('').search('<?') > -1) {
+    stringList = extractMetaDataFromXml(stringList)
+  }
   for (const line of stringList) {
     const [key, value] = line.split(':')
-    const sanitizedKey = key.replace('\n', '')
+    const sanitizedKey = key.replace('\n', '').toUpperCase()
     result[sanitizedKey] =
       nativeTypes && isValidNumberToConvert(key, value) ? Number(value) : value
   }

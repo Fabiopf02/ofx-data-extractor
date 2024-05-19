@@ -178,7 +178,7 @@ export function getCreditCardStatementTransactionsText(ofxContent: string) {
 }
 
 export function extractMetaDataFromXml(data: string[]) {
-  let result: string[] = []
+  const result: string[] = []
   for (const tag of data) {
     result.push(
       ...tag

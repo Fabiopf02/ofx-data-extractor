@@ -2,6 +2,7 @@
 
 [![npm version](https://badge.fury.io/js/ofx-data-extractor.svg)](https://badge.fury.io/js/ofx-data-extractor) [![MIT License][license-image]][license-url]
 [![codecov](https://codecov.io/gh/Fabiopf02/ofx-data-extractor/branch/main/graph/badge.svg?token=L4A7E4H8IN)](https://codecov.io/gh/Fabiopf02/ofx-data-extractor)
+[![Release Package](https://github.com/Fabiopf02/ofx-data-extractor/actions/workflows/release.yml/badge.svg)](https://github.com/Fabiopf02/ofx-data-extractor/actions/workflows/release.yml)
 
 ## Ofx Data Extractor and Formatter
 This is a `Node.js` and `Browser` module written in `TypeScript` that provides a utility for extracting data from an `OFX` file. The module can also format some of the data and retrieve specific parts of the file if requested.

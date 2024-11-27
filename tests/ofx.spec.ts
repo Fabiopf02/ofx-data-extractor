@@ -58,4 +58,14 @@ describe('Tests in the Node.js environment', () => {
     const transfer = ofx.config({ nativeTypes: true }).getBankTransferList()[0]
     expect(typeof transfer.TRNAMT).toBe('number')
   })
+
+  test.concurrent('Should correctly return transaction summary', () => {
+    const summary = ofx.getTransactionsSummary()
+    expect(summary.credit.toFixed(1)).toBe('669.6')
+    expect(summary.debit.toFixed(1)).toBe('34.1')
+    expect(summary.amountOfCredits).toBe(9)
+    expect(summary.amountOfDebits).toBe(9)
+    expect(summary.dateStart).toBe('2018-01-30')
+    expect(summary.dateEnd).toBe('2018-04-29')
+  })
 })

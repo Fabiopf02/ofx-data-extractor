@@ -214,13 +214,14 @@ export function convertMetaDataToObject(
 export function getTransactionsSummary(STRTTRN: STRTTRNType[]) {
   return STRTTRN.reduce(
     (prevValue, currValue) => {
+      const value = Math.abs(+currValue.TRNAMT)
       if (currValue.TRNTYPE.toLocaleLowerCase().startsWith('deb')) {
         prevValue.amountOfDebits++
-        prevValue.debit += Number(currValue.TRNAMT.replace('-', ''))
+        prevValue.debit += value
         return prevValue
       }
       prevValue.amountOfCredits++
-      prevValue.credit += Number(currValue.TRNAMT)
+      prevValue.credit += value
       return prevValue
     },
     { credit: 0, debit: 0, amountOfCredits: 0, amountOfDebits: 0 },

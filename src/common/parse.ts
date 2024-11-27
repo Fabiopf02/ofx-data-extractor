@@ -23,6 +23,7 @@ export function fixJsonProblems(content: string) {
     .replace(ELEMENT_OPENING_REGEX, value => objectStartReplacer(value, true))
     .replace(/(},})/g, '}}')
     .replace(/(}")/g, '},"')
+    .replace(/(]")/g, '],"')
     .replace(/(},])/g, '}]')
     .replace(/(,})/g, '}')
     .replace(/({")/g, '{\n"')

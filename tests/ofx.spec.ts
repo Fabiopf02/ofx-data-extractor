@@ -20,6 +20,13 @@ describe('Tests in the Node.js environment', () => {
     expect(ofx.getBankTransferList()).toHaveLength(18)
   })
 
+  test.concurrent(
+    'It should return the correct amount of credit card transactions',
+    () => {
+      expect(ofx.getCreditCardTransferList()).toHaveLength(2)
+    },
+  )
+
   test.concurrent('Should correctly return transaction summary', () => {
     const summary = ofx.getTransactionsSummary()
     expect(summary.credit).toBe(669.6)

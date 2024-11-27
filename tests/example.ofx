@@ -99,7 +99,7 @@ NEWFILEUID:NONE
             <TRNAMT>-3,34</TRNAMT>
             <FITID>2018040307261001046000000064109593</FITID>
             <CHECKNUM>000000064109593</CHECKNUM>
-            <MEMO>Tarifa repasse: 28108174 de Ciclano da Silva</MEMO>
+            <MEMO>Tarifa repasse: 28108174, de Ciclano da Silva "test"</MEMO>
           </STMTTRN>
           <STMTTRN><TRNTYPE>CREDIT
             <DTPOSTED>20180416120000[-3:BRT]
@@ -122,7 +122,7 @@ NEWFILEUID:NONE
             <FITID>2018041517302002047000000065696376</FITID>
             <CHECKNUM>000000065696376</CHECKNUM>
             <REFNUM>2002047000000029533821
-            <MEMO>Repasse pagamento: 29533821 de HA</MEMO>
+            <MEMO>Repasse pagamento: 29533821 "" de HA</MEMO>
           </STMTTRN>
           <STMTTRN>
             <TRNTYPE>DEBIT</TRNTYPE>

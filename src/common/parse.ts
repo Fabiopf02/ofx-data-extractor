@@ -8,6 +8,8 @@ import {
   ELEMENT_OPENING_REGEX,
   FINISH_STATEMENT_TRANSACTION,
   OPENING_TAGS_INITIALLY_IGNORED,
+  QUOTE_PATTERN,
+  QUOTE_PATTERN_REGEX,
   START_STATEMENT_TRANSACION,
 } from './constants'
 import type { STRTTRN as STRTTRNType } from '../@types/ofx'
@@ -28,6 +30,7 @@ export function fixJsonProblems(content: string) {
     .replace(/(",")/g, '",\n"')
     .replace(/,\s*}/g, '\n}')
     .replace(/(,",)/, ',')
+    .replace(QUOTE_PATTERN_REGEX, '\\"')
     .slice(0, -1)
 }
 
@@ -83,7 +86,10 @@ type SanitizeValueParams = ExtractorConfig & {
   value: string
 }
 function sanitizeValue(params: SanitizeValueParams) {
-  let fieldValue = params.value.replace(/[{]/g, '').replace(/(},)/g, '')
+  let fieldValue = params.value
+    .replace(/[{]/g, '')
+    .replace(/(},)/g, '')
+    .replace(/["]/g, QUOTE_PATTERN)
   const fieldName = params.field.replace(/['"]/g, '')
   if (fieldName.endsWith('AMT')) fieldValue = sanitizeCurrency(fieldValue)
   if (isDateField(fieldName))

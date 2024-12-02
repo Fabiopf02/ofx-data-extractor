@@ -15,6 +15,7 @@ import {
 import type { STRTTRN as STRTTRNType } from '../@types/ofx'
 import { ExtractorConfig } from '../@types/common'
 import { formatDate } from './date'
+import { isDebt } from './helpers'
 
 export function fixJsonProblems(content: string) {
   return content
@@ -222,7 +223,7 @@ export function getTransactionsSummary(STRTTRN: STRTTRNType[]) {
   return STRTTRN.reduce(
     (prevValue, currValue) => {
       const value = Math.abs(+currValue.TRNAMT)
-      if (currValue.TRNTYPE.toLocaleLowerCase().startsWith('deb')) {
+      if (isDebt(currValue)) {
         prevValue.amountOfDebits++
         prevValue.debit += value
         return prevValue

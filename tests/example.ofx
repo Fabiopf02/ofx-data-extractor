@@ -123,7 +123,7 @@ NEWFILEUID:NONE
             <MEMO>Repasse pagamento: 29533821 "" de HA</MEMO>
           </STMTTRN>
           <STMTTRN>
-            <TRNTYPE>DEBIT</TRNTYPE>
+            <TRNTYPE>1</TRNTYPE>
             <DTPOSTED>20180429120000[-3:BRT]
             <TRNAMT>-3,49</TRNAMT>
             <FITID>2018041517301001047000000065696377</FITID>
@@ -131,7 +131,7 @@ NEWFILEUID:NONE
             <MEMO>Tarifa repasse: 29533821 de HA\\</MEMO>
           </STMTTRN>
           <STMTTRN>
-            <TRNTYPE>CREDIT</TRNTYPE>
+            <TRNTYPE>0</TRNTYPE>
             <DTPOSTED>20180429120000[-3:BRT]
             <TRNAMT>74,40</TRNAMT>
             <FITID>2018042606102002046000000066643667</FITID>

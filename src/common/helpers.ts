@@ -1,3 +1,4 @@
+import { STRTTRN } from '../@types/ofx'
 import { Types } from '../@types/common'
 import { BANK_SERVICE_START } from './constants'
 
@@ -6,4 +7,9 @@ export const extractType = (content: string) => {
     return Types.BANK
   }
   return Types.CREDIT_CARD
+}
+
+export function isDebt(STRTTRN: STRTTRN) {
+  const type = String(STRTTRN.TRNTYPE).toLocaleLowerCase()
+  return type === '1' || type.startsWith('deb')
 }

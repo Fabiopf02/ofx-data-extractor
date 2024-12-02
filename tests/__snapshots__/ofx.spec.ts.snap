@@ -158,7 +158,7 @@ exports[` 1`] = `
                 "FITID": "2018041517301001047000000065696377",
                 "MEMO": "Tarifa repasse: 29533821 de HA\\\\",
                 "TRNAMT": "-3.49",
-                "TRNTYPE": "DEBIT",
+                "TRNTYPE": "1",
               },
               {
                 "CHECKNUM": "000000066643667",
@@ -167,7 +167,7 @@ exports[` 1`] = `
                 "MEMO": "Repasse pagamento: 30830691 de Duque\\",
                 "REFNUM": "2002046000000030830691",
                 "TRNAMT": "74.40",
-                "TRNTYPE": "CREDIT",
+                "TRNTYPE": "0",
               },
               {
                 "CHECKNUM": "000000066643670",
@@ -398,7 +398,7 @@ exports[` 2`] = `
                 "FITID": "2018041517301001047000000065696377",
                 "MEMO": "Tarifa repasse: 29533821 de HA\\\\",
                 "TRNAMT": "-3.49",
-                "TRNTYPE": "DEBIT",
+                "TRNTYPE": "1",
               },
               {
                 "CHECKNUM": "000000066643667",
@@ -407,7 +407,7 @@ exports[` 2`] = `
                 "MEMO": "Repasse pagamento: 30830691 de Duque\\",
                 "REFNUM": "2002046000000030830691",
                 "TRNAMT": "74.40",
-                "TRNTYPE": "CREDIT",
+                "TRNTYPE": "0",
               },
               {
                 "CHECKNUM": "000000066643670",

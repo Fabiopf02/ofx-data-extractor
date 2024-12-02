@@ -13,6 +13,10 @@ export class Ofx {
     this.extractor.config(config || {})
   }
 
+  getType() {
+    return this.extractor.getType()
+  }
+
   static fromBuffer(data: Buffer) {
     return new Ofx(Reader.fromBuffer(data).getData())
   }

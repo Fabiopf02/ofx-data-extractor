@@ -10,6 +10,7 @@ import { Config } from '../common/config'
 import { Reader } from './reader'
 import { OfxExtractor } from './ofx-extractor'
 import { OfxResponse, OfxStructure, STRTTRN } from '../@types/ofx'
+import { extractType } from '../common/helpers'
 
 export class Extractor<T = any> implements IExtractor<T> {
   private customExtractorInstance: CustomExtractor
@@ -28,6 +29,10 @@ export class Extractor<T = any> implements IExtractor<T> {
   config(config: ExtractorConfig): this {
     this.customExtractorInstance.setConfig(new Config(config))
     return this
+  }
+
+  getType() {
+    return extractType(this.dataReaderInstance.getData())
   }
 
   getHeaders(): MetaData {

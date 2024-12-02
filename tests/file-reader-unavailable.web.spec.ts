@@ -1,12 +1,7 @@
-import path from 'path'
 import { Ofx } from '../src/index'
-import fs from 'fs'
-
-const file = fs.readFileSync(path.resolve(__dirname, 'example.ofx'))
 
 describe('Tests for Web/Browser environment with feature not available ', () => {
   test.concurrent('Should throw error for FileReader undefined', () => {
-    const blob = new Blob([file.toString()], { type: 'text/plain' })
     jest.mock('../src/common/reader', () => ({
       window: null,
     }))

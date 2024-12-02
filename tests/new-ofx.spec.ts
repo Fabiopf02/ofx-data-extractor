@@ -3,6 +3,7 @@ import fs, { readFileSync } from 'fs'
 import { Extractor } from '../src/implementations/extractor'
 import { OfxExtractor } from '../src/implementations/ofx-extractor'
 import { Reader } from '../src/implementations/reader'
+import { Types } from '../src/@types/common'
 
 const ofxExtractor = new OfxExtractor()
 const reader = new Reader()
@@ -104,4 +105,18 @@ describe('Tests in the Node.js environment', () => {
     const extractorInstance = extractor.data(Reader.fromBuffer(file))
     expect(extractorInstance.getBankTransferList()).toHaveLength(0)
   })
+
+  test.concurrent('Should correctly return ofx type (bank)', () => {
+    const data = Reader.fromString(file.toString())
+    expect(extractor.data(data).getType()).toBe(Types.BANK)
+  })
+
+  test.concurrent(
+    'Should correctly return ofx type (credit card)',
+    async () => {
+      const file = readFileSync(path.resolve(__dirname, 'example3.ofx'))
+      const extractorInstance = extractor.data(Reader.fromBuffer(file))
+      expect(extractorInstance.getType()).toBe(Types.CREDIT_CARD)
+    },
+  )
 })

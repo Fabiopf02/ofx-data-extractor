@@ -51,3 +51,8 @@ export type TransactionsSummary = {
   dateStart: string
   dateEnd: string
 }
+
+export enum Types {
+  'BANK' = 'BANK',
+  'CREDIT_CARD' = 'CREDIT_CARD',
+}

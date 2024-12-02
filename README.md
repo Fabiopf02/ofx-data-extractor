@@ -22,6 +22,7 @@ yarn add ofx-data-extractor
 ### Methods
 The `Ofx` class provides the following methods:
 
+- `getType(): Types`: Used to get type of transactions from ofx (BANK or CREDIT_CARD)
 - `fromBuffer(data: Buffer)`: Used to read files on the node. Returns the methods
 - `fromBlob(data: Blob)`: Used to read files in the browser. Returns the methods below.
 - `config(options: OfxConfig)`: Used for formatting the generated json.`

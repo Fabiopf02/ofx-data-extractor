@@ -3,9 +3,12 @@ import {
   ExtractorConfig,
   MetaData,
   TransactionsSummary,
+  Types,
 } from '../@types/common'
 
 export interface IExtractor<T> {
+  getType(): Types
+
   config(config: ExtractorConfig): this
 
   getHeaders(): MetaData

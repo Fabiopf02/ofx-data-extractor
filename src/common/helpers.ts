@@ -9,7 +9,7 @@ export const extractType = (content: string) => {
   return Types.CREDIT_CARD
 }
 
-export function isDebt(STRTTRN: STRTTRN) {
-  const type = String(STRTTRN.TRNTYPE).toLocaleLowerCase()
+export function isDebt(strttrn: STRTTRN) {
+  const type = String(strttrn.TRNTYPE).toLocaleLowerCase()
   return type === '1' || type.startsWith('deb')
 }

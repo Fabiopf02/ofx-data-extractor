@@ -80,4 +80,19 @@ describe('Tests in the Node.js environment', () => {
   test.concurrent('Should correctly return ofx type (bank)', () => {
     expect(ofx.getType()).toBe(Types.BANK)
   })
+
+  test.concurrent('Should correctly read an online ofx', () => {
+    const file = fs.readFileSync(path.resolve(__dirname, 'inline.ofx'))
+    const ofx = Ofx.fromBuffer(file)
+    const headers = ofx.getHeaders()
+
+    expect(ofx.toJson()).toMatchSnapshot()
+
+    expect(headers.VERSION).toBe('211')
+    expect(headers.ENCODING).toBe('US-ASCII')
+    expect(headers.OFXHEADER).toBe('200')
+    expect(headers.SECURITY).toBe('NONE')
+    expect(headers.OLDFILEUID).toBe('NONE')
+    expect(headers.NEWFILEUID).toBe('NONE')
+  })
 })

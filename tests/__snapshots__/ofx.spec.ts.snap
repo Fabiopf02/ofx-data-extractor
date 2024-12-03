@@ -480,3 +480,63 @@ exports[` 2`] = `
   },
 }
 `;
+
+exports[` 3`] = `
+{
+  "ENCODING": "US-ASCII",
+  "NEWFILEUID": "NONE",
+  "OFX": {
+    "CREDITCARDMSGSRSV1": {
+      "CCSTMTTRNRS": {
+        "CCSTMTRS": {
+          "AVAILBAL": {
+            "BALAMT": "1.31",
+            "DTASOF": "2024-05-17",
+          },
+          "BANKTRANLIST": {
+            "DTEND": "2024-05-17",
+            "DTSTART": "2024-05-17",
+            "STRTTRN": [
+              {
+                "DTPOSTED": "2024-05-15",
+                "FITID": "111111",
+                "NAME": "Example",
+                "TRNAMT": "-11.79",
+                "TRNTYPE": "DEBIT",
+              },
+            ],
+          },
+          "CCACCTFROM": {
+            "ACCTID": "111111-1111",
+          },
+          "CURDEF": "USD",
+          "LEDGERBAL": {
+            "BALAMT": "-1.44",
+            "DTASOF": "2024-05-17",
+          },
+        },
+        "STATUS": {
+          "CODE": "0",
+          "MESSAGE": "Success",
+          "SEVERITY": "INFO",
+        },
+        "TRNUID": "1",
+      },
+    },
+    "SIGNONMSGSRSV1": {
+      "SONRS": {
+        "DTSERVER": "2024-05-17",
+        "LANGUAGE": "ENG",
+        "STATUS": {
+          "CODE": "0",
+          "SEVERITY": "INFO",
+        },
+      },
+    },
+  },
+  "OFXHEADER": "200",
+  "OLDFILEUID": "NONE",
+  "SECURITY": "NONE",
+  "VERSION": "211",
+}
+`;

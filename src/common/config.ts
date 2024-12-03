@@ -26,6 +26,7 @@ export class Config {
      * Use replace first for closing tag so there is no conflict in `objectStartReplacer`
      */
     return ofxContent
+      .replace(/<([^\/][^>]*)>/g, '\n<$1>')
       .replace(ELEMENT_CLOSURE_REGEX, value => objectEndReplacer(value))
       .replace(ELEMENT_OPENING_REGEX, value => objectStartReplacer(value))
       .split('\n')

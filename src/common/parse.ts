@@ -18,22 +18,22 @@ import { formatDate } from './date'
 import { isDebt } from './helpers'
 
 export function fixJsonProblems(content: string) {
-  return content
+  let result = content
     .replace(/(\\)/g, '\\\\')
     .replace(ELEMENT_CLOSURE_REGEX, value => objectEndReplacer(value, true))
     .replace(ELEMENT_OPENING_REGEX, value => objectStartReplacer(value, true))
+    .replace('\n', '')
     .replace(/(},})/g, '}}')
     .replace(/(}")/g, '},"')
     .replace(/(]")/g, '],"')
     .replace(/(},])/g, '}]')
     .replace(/(,})/g, '}')
-    .replace(/({")/g, '{\n"')
-    .replace(/(})/g, '\n}')
-    .replace(/(",")/g, '",\n"')
-    .replace(/,\s*}/g, '\n}')
+    .replace(/,\s*}/g, '}')
     .replace(/(,",)/, ',')
     .replace(QUOTE_PATTERN_REGEX, '\\"')
     .slice(0, -1)
+  if (result.endsWith(',')) return result.slice(0, -1)
+  return result
 }
 
 export const extractFinancialInstitutionTransactionId = (fitid: string) =>
@@ -55,7 +55,7 @@ export function objectStartReplacer(param: string, force = false) {
 export function objectEndReplacer(param: string, force = false) {
   if (CLOSING_TAGS_INITIALLY_IGNORED.includes(param) && !force)
     return `\n${param}`
-  return '},'
+  return '},\n'
 }
 
 export function configFinancialInstitutionTransactionId({
@@ -214,7 +214,9 @@ export function convertMetaDataToObject(
     const [key, value] = line.split(':')
     const sanitizedKey = key.replace('\n', '').toUpperCase()
     result[sanitizedKey] =
-      nativeTypes && isValidNumberToConvert(key, value) ? Number(value) : value
+      nativeTypes && isValidNumberToConvert(key, value)
+        ? Number(value)
+        : String(value).replace(/\?>/, '')
   }
   return result
 }

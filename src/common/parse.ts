@@ -22,7 +22,6 @@ export function fixJsonProblems(content: string) {
     .replace(/(\\)/g, '\\\\')
     .replace(ELEMENT_CLOSURE_REGEX, value => objectEndReplacer(value, true))
     .replace(ELEMENT_OPENING_REGEX, value => objectStartReplacer(value, true))
-    .replace('\n', '')
     .replace(/(},})/g, '}}')
     .replace(/(}")/g, '},"')
     .replace(/(]")/g, '],"')

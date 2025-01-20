@@ -4,7 +4,7 @@ import {
   getCreditCardStatementTransactionsText,
   getTransactionsSummary,
 } from '../common/parse'
-import { OfxStructure } from '../@types/ofx'
+import { OfxStructure } from '../@types/ofx/index'
 import { CustomExtractor } from '../interfaces/custom-extractor.interface'
 import { Config } from '../common/config'
 import { TransactionsSummary } from '../@types/common'
@@ -36,12 +36,9 @@ export class OfxExtractor extends CustomExtractor {
 
   getTransactionsSummary(data: string) {
     const jsonData = this.getContent(data)
-    const {
-      DTEND,
-      DTSTART,
-      STRTTRN: transactions,
-    } = jsonData.OFX.BANKMSGSRSV1.STMTTRNRS.STMTRS.BANKTRANLIST
-    const summary = getTransactionsSummary(transactions)
+    const { DTEND, DTSTART, ...restData } =
+      jsonData.OFX.BANKMSGSRSV1.STMTTRNRS.STMTRS.BANKTRANLIST
+    const summary = getTransactionsSummary(restData.STMTTRN || restData.STRTTRN)
     return {
       dateStart: DTSTART,
       dateEnd: DTEND,

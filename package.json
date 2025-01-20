@@ -47,6 +47,7 @@
     "build": "rollup --config",
     "start": "node dist/index.js",
     "format": "prettier --write \"src/**/*.ts\"",
+    "prepublish": "npm run build",
     "lint": "tslint -p tsconfig.json"
   },
   "devDependencies": {

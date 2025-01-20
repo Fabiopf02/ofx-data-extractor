@@ -1,13 +1,14 @@
 import { Extractor } from '../implementations/extractor'
-import { MetaData } from '../@types/common'
-import { OfxResponse, OfxStructure, STRTTRN, OfxConfig } from '../@types/ofx'
+import { ExtractorConfig, MetaData } from '../@types/common'
+import { OfxResponse, OfxStructure } from '../@types/ofx/index'
 import { OfxExtractor } from '../implementations/ofx-extractor'
 import { Reader } from '../implementations/reader'
+import { StatementTransaction } from '../@types/ofx/common'
 
 export class Ofx {
   private extractor: Extractor
 
-  constructor(data: string, config?: OfxConfig) {
+  constructor(data: string, config?: ExtractorConfig) {
     this.extractor = new Extractor(new OfxExtractor())
     this.extractor.data(new Reader(data))
     this.extractor.config(config || {})
@@ -26,7 +27,7 @@ export class Ofx {
     return new Ofx(reader.getData())
   }
 
-  config(config: OfxConfig) {
+  config(config: ExtractorConfig) {
     this.extractor.config(config)
     return this
   }
@@ -35,11 +36,11 @@ export class Ofx {
     return this.extractor.getHeaders()
   }
 
-  getBankTransferList(): STRTTRN[] {
+  getBankTransferList(): StatementTransaction[] {
     return this.extractor.getBankTransferList()
   }
 
-  getCreditCardTransferList(): STRTTRN[] {
+  getCreditCardTransferList(): StatementTransaction[] {
     return this.extractor.getCreditCardTransferList()
   }
 

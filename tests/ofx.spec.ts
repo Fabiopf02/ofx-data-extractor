@@ -15,6 +15,9 @@ describe('Tests in the Node.js environment', () => {
     expect(headers.CHARSET).toBe('1252')
     expect(headers.ENCODING).toBe('UTF-8')
     expect(headers.VERSION).toBe('102')
+    expect(
+      ofx.getContent().OFX.BANKMSGSRSV1.STMTTRNRS.STMTRS.BANKACCTFROM.ACCTTYPE,
+    ).toBe('CHECKING')
   })
 
   test.concurrent('It should return the correct amount of transactions', () => {

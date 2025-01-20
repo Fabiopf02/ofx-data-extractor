@@ -12,10 +12,10 @@ import {
   QUOTE_PATTERN_REGEX,
   START_STATEMENT_TRANSACION,
 } from './constants'
-import type { STRTTRN as STRTTRNType } from '../@types/ofx'
 import { ExtractorConfig } from '../@types/common'
 import { formatDate } from './date'
 import { isDebt } from './helpers'
+import type { StatementTransaction } from '../@types/ofx/common'
 
 export function fixJsonProblems(content: string) {
   const result = content
@@ -220,8 +220,8 @@ export function convertMetaDataToObject(
   return result
 }
 
-export function getTransactionsSummary(STRTTRN: STRTTRNType[]) {
-  return STRTTRN.reduce(
+export function getTransactionsSummary(transations: StatementTransaction[]) {
+  return transations.reduce(
     (prevValue, currValue) => {
       const value = Math.abs(+currValue.TRNAMT)
       if (isDebt(currValue)) {

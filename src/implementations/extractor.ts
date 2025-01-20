@@ -9,8 +9,9 @@ import { CustomExtractor } from '../interfaces/custom-extractor.interface'
 import { Config } from '../common/config'
 import { Reader } from './reader'
 import { OfxExtractor } from './ofx-extractor'
-import { OfxResponse, OfxStructure, STRTTRN } from '../@types/ofx'
+import { OfxResponse, OfxStructure } from '../@types/ofx/index'
 import { extractType } from '../common/helpers'
+import { StatementTransaction } from '../@types/ofx/common'
 
 export class Extractor<T = any> implements IExtractor<T> {
   private customExtractorInstance: CustomExtractor
@@ -43,13 +44,13 @@ export class Extractor<T = any> implements IExtractor<T> {
     ) as MetaData
   }
 
-  getBankTransferList(): STRTTRN[] {
+  getBankTransferList(): StatementTransaction[] {
     return this.customExtractorInstance.getBankTransferList(
       this.dataReaderInstance.getData(),
     )
   }
 
-  getCreditCardTransferList(): STRTTRN[] {
+  getCreditCardTransferList(): StatementTransaction[] {
     return this.customExtractorInstance.getCreditCardTransferList(
       this.dataReaderInstance.getData(),
     )

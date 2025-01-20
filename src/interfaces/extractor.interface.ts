@@ -1,10 +1,11 @@
-import { OfxResponse, OfxStructure, STRTTRN } from '../@types/ofx'
+import { OfxResponse, OfxStructure } from '../@types/ofx/index'
 import {
   ExtractorConfig,
   MetaData,
   TransactionsSummary,
   Types,
 } from '../@types/common'
+import type { StatementTransaction } from '../@types/ofx/common'
 
 export interface IExtractor<T> {
   getType(): Types
@@ -13,9 +14,9 @@ export interface IExtractor<T> {
 
   getHeaders(): MetaData
 
-  getBankTransferList(): STRTTRN[]
+  getBankTransferList(): StatementTransaction[]
 
-  getCreditCardTransferList(): STRTTRN[]
+  getCreditCardTransferList(): StatementTransaction[]
 
   getTransactionsSummary(): TransactionsSummary
 

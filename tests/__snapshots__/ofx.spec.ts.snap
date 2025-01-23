@@ -230,6 +230,7 @@ exports[` 1`] = `
     "SIGNONMSGSRSV1": {
       "SONRS": {
         "DTSERVER": "2005-08-31",
+        "INTU.BID": "1810",
         "LANGUAGE": "ENG",
         "STATUS": {
           "CODE": "0",
@@ -470,6 +471,7 @@ exports[` 2`] = `
     "SIGNONMSGSRSV1": {
       "SONRS": {
         "DTSERVER": "2005-08-31",
+        "INTU.BID": "1810",
         "LANGUAGE": "ENG",
         "STATUS": {
           "CODE": "0",

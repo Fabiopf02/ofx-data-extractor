@@ -5,6 +5,7 @@ export type CreditCardTransactionResponse = {
   TRNUID: string
   STATUS: Status
   CCSTMTRS: CreditCardStatementResponse
+  [key: string]: any
 }
 
 export type CreditCardStatementResponse = {
@@ -13,12 +14,15 @@ export type CreditCardStatementResponse = {
   BANKTRANLIST: BankTransactionList
   LEDGERBAL: Balance
   AVAILBAL?: Balance
+  [key: string]: any
 }
 
 export type CreditCardAccount = {
   ACCTID: string
+  [key: string]: any
 }
 
 export type CreditCardResponse = {
   CCSTMTTRNRS: CreditCardTransactionResponse
+  [key: string]: any
 }

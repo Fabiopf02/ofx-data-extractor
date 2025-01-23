@@ -8,6 +8,7 @@ export type MetaData = {
   COMPRESSION: string
   OLDFILEUID: string
   NEWFILEUID: string
+  [key: string]: any
 }
 
 export type DateResponse = {

@@ -1,5 +1,5 @@
-export const ELEMENT_CLOSURE_REGEX = /<\/\w+>/g
-export const ELEMENT_OPENING_REGEX = /<\w+>/g
+export const ELEMENT_CLOSURE_REGEX = /<\/[\w.]+>/g
+export const ELEMENT_OPENING_REGEX = /<[\w.]+>/g
 export const BANK_SERVICE_START = '<BANKMSGSRSV1>'
 export const BANK_SERVICE_END = '</BANKMSGSRSV1>'
 export const CREDIT_CARD_SERVICE_START = '<CREDITCARDMSGSRSV1>'

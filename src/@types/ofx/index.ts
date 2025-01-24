@@ -7,10 +7,12 @@ export type OFX = {
   SIGNONMSGSRSV1: SignOnResponse
   BANKMSGSRSV1: BankResponse
   CREDITCARDMSGSRSV1: CreditCardResponse
+  [key: string]: any
 }
 
 export type OfxStructure = {
   OFX: OFX
+  [key: string]: any
 }
 
 export type OfxResponse = MetaData & OfxStructure

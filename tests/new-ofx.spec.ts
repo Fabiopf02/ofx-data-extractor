@@ -119,4 +119,10 @@ describe('Tests in the Node.js environment', () => {
       expect(extractorInstance.getType()).toBe(Types.CREDIT_CARD)
     },
   )
+
+  test.concurrent('Should parse TRNUID with a date', async () => {
+    const file = readFileSync(path.resolve(__dirname, 'example4.ofx'))
+    const extractorInstance = extractor.data(Reader.fromBuffer(file))
+    expect(extractorInstance.toJson()).not.toBeNull
+  })
 })

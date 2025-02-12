@@ -28,7 +28,7 @@ export function fixJsonProblems(content: string) {
     .replace(/(},])/g, '}]')
     .replace(/(,})/g, '}')
     .replace(/,\s*}/g, '}')
-    .replace(/(,",)/, ',')
+    .replace(/(,",)/, '",')
     .replace(QUOTE_PATTERN_REGEX, '\\"')
     .slice(0, -1)
   if (result.endsWith(',')) return result.slice(0, -1)

@@ -38,7 +38,9 @@ export class OfxExtractor extends CustomExtractor {
     const jsonData = this.getContent(data)
     const { DTEND, DTSTART, ...restData } =
       jsonData.OFX.BANKMSGSRSV1.STMTTRNRS.STMTRS.BANKTRANLIST
-    const summary = getTransactionsSummary(restData.STMTTRN || restData.STRTTRN)
+    const summary = getTransactionsSummary(
+      restData.STMTTRN || restData.STRTTRN || [],
+    )
     return {
       dateStart: DTSTART,
       dateEnd: DTEND,

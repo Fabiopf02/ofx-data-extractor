@@ -17,11 +17,12 @@ describe('Tests in Web/Browser environment', () => {
 
   test.concurrent('should convert Blob to string /static method', async () => {
     const blob = new Blob([file.toString()], { type: 'text/plain' })
-    const transfer = (await Ofx.fromBlob(blob))
+    const transactions = (await Ofx.fromBlob(blob))
       .config({
         nativeTypes: true,
       })
-      .toJson().OFX.BANKMSGSRSV1.STMTTRNRS.STMTRS.BANKTRANLIST.STRTTRN[0]
+      .toJson().OFX.BANKMSGSRSV1.STMTTRNRS.STMTRS.BANKTRANLIST.STRTTRN
+    const transfer = (transactions || [])[0]
     expect(transfer.TRNAMT).toBe(74.4)
   })
 

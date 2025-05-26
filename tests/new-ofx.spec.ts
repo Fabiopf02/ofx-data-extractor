@@ -125,4 +125,10 @@ describe('Tests in the Node.js environment', () => {
     const extractorInstance = extractor.data(Reader.fromBuffer(file))
     expect(extractorInstance.toJson()).not.toBeNull
   })
+
+  test.concurrent('Should parse transactions with no STMTTRN', async () => {
+    const file = readFileSync(path.resolve(__dirname, 'example5.ofx'))
+    const extractorInstance = extractor.data(Reader.fromBuffer(file))
+    expect(extractorInstance.toJson()).not.toBeNull
+  })
 })

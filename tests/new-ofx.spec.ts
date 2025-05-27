@@ -130,5 +130,6 @@ describe('Tests in the Node.js environment', () => {
     const file = readFileSync(path.resolve(__dirname, 'example5.ofx'))
     const extractorInstance = extractor.data(Reader.fromBuffer(file))
     expect(extractorInstance.toJson()).not.toBeNull
+    expect(extractorInstance.getTransactionsSummary()).not.toBeNull
   })
 })

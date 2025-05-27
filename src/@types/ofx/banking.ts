@@ -31,7 +31,7 @@ export type BankAccount = {
 export type BankTransactionList = {
   DTSTART: string
   DTEND: string
-  STMTTRN: StatementTransaction[]
-  STRTTRN: StatementTransaction[]
+  STMTTRN?: StatementTransaction[]
+  STRTTRN?: StatementTransaction[]
   [key: string]: any
 }

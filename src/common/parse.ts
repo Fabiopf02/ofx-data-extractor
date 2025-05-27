@@ -134,6 +134,12 @@ export function parseTransactions(content: string) {
   const endIndex =
     content.lastIndexOf(FINISH_STATEMENT_TRANSACTION) +
     FINISH_STATEMENT_TRANSACTION.length
+  if (startIndex < 0 || endIndex < 0 || startIndex >= endIndex) {
+    return {
+      oldListText: content,
+      newListText: content,
+    }
+  }
   const oldListText = content.substring(startIndex, endIndex)
   const startRgx = new RegExp(START_STATEMENT_TRANSACION, 'g')
   const endRgx = new RegExp(FINISH_STATEMENT_TRANSACTION, 'g')

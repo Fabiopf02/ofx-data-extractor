@@ -7,6 +7,18 @@
 
 `ofx-data-extractor` is a TypeScript library for parsing, normalizing and validating OFX files in Node.js and browser environments.
 
+## Table of Contents
+
+- [Installation](#installation)
+- [Quick Start](#quick-start)
+- [Node.js](#nodejs)
+- [Browser (`fromBlob` is async)](#browser-fromblob-is-async)
+- [Main Public API (`Ofx`)](#main-public-api-ofx)
+- [Configuration (Extract)](#configuration-extract)
+- [Developer Documentation](#developer-documentation)
+- [Examples](#examples)
+- [License](#license)
+
 ## Installation
 
 ```bash

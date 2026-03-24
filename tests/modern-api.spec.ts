@@ -62,6 +62,19 @@ describe('Modern API additions', () => {
     ).toBe(true)
   })
 
+  test('Should not flag INVALID_DATE when configured date format is d/M/y', () => {
+    const report = new Ofx(ofxFile.toString('utf-8'), {
+      parserMode: 'lenient',
+      formatDate: 'd/M/y',
+    }).validate()
+
+    expect(
+      report.warnings.some(
+        (warning: OfxDiagnostic) => warning.code === 'INVALID_DATE',
+      ),
+    ).toBe(false)
+  })
+
   test('Should respect strict and lenient parser modes', () => {
     const brokenOfx = 'OFXHEADER:100\nDATA:OFXSGML\nVERSION:102\n<OFX><BROKEN>'
 
@@ -119,6 +132,22 @@ describe('Modern API additions', () => {
     const result = new Ofx(suspicious, { parserMode: 'lenient' }).toJson() as any
     expect(({} as any).polluted).toBeUndefined()
     expect(result.OFX.__proto__).toBeDefined()
+  })
+
+  test('Should safely count FITID values even with prototype-like keys', () => {
+    let fitIdCount = 0
+    const withPrototypeLikeFitId = ofxFile
+      .toString('utf-8')
+      .replace(/<FITID>([^\n<]+)/g, (_match, fitId) => {
+        fitIdCount += 1
+        if (fitIdCount <= 2) return '<FITID>__proto__'
+        return `<FITID>${fitId}`
+      })
+
+    const report = new Ofx(withPrototypeLikeFitId, { parserMode: 'lenient' }).validate()
+    expect(report.warnings.some(warning => warning.code === 'DUPLICATED_FITID')).toBe(
+      true,
+    )
   })
 
   test('Should keep minimum performance baseline for normalization and validation', () => {

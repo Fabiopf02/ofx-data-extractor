@@ -67,7 +67,35 @@ function parseIsoDate(date: string): ParsedDateParts | null {
 
 function parseIsoDateTime(date: string): ParsedDateParts | null {
   if (!/^\d{4}-\d{2}-\d{2}T/.test(date)) return null
-  const asDate = new Date(date)
+  const match = date.match(
+    /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):?(\d{2})(?::?(\d{2}))?(?:\.\d+)?(?:([+-]\d{2}):?(\d{2})|Z)?$/,
+  )
+  if (!match) return null
+  const year = Number(match[1])
+  const month = Number(match[2])
+  const day = Number(match[3])
+  const hour = Number(match[4])
+  const minutes = Number(match[5])
+  const seconds = Number(match[6] || '0')
+  const localParts = {
+    year,
+    month,
+    day,
+    hour,
+    minutes,
+    seconds,
+  }
+  if (!isValidParsedDate(localParts)) return null
+  const offsetHour = Number(match[7] || '0')
+  const offsetMinutes = Number(match[8] || '0')
+  const offsetTotalMinutes =
+    offsetHour < 0
+      ? offsetHour * 60 - offsetMinutes
+      : offsetHour * 60 + offsetMinutes
+  const asDate = new Date(
+    Date.UTC(year, month - 1, day, hour, minutes, seconds) -
+      offsetTotalMinutes * 60_000,
+  )
   if (Number.isNaN(asDate.getTime())) return null
   return {
     year: asDate.getUTCFullYear(),
@@ -93,8 +121,32 @@ function parseOfxDateString(date: string): ParsedDateParts | null {
   }
 }
 
+function parseSeparatedDate(date: string): ParsedDateParts | null {
+  const match = date.match(/^(\d{1,4})[/-](\d{1,2})[/-](\d{1,4})$/)
+  if (!match) return null
+  const left = Number(match[1])
+  const middle = Number(match[2])
+  const right = Number(match[3])
+  const isYearFirst = String(match[1]).length === 4
+  const isYearLast = String(match[3]).length === 4
+  if (!isYearFirst && !isYearLast) return null
+  return {
+    year: isYearFirst ? left : right,
+    month: middle,
+    day: isYearFirst ? right : left,
+    hour: 0,
+    minutes: 0,
+    seconds: 0,
+  }
+}
+
 export function parseDateParts(date: string): ParsedDateParts | null {
-  return parseIsoDate(date) || parseIsoDateTime(date) || parseOfxDateString(date)
+  return (
+    parseIsoDate(date) ||
+    parseIsoDateTime(date) ||
+    parseSeparatedDate(date) ||
+    parseOfxDateString(date)
+  )
 }
 
 export function isValidParsedDate(parts: ParsedDateParts): boolean {

@@ -1,9 +1,15 @@
 import {
+  BANK_SERVICE_END,
+  BANK_SERVICE_START,
+  CREDIT_CARD_SERVICE_END,
+  CREDIT_CARD_SERVICE_START,
+} from '../common/constants'
+import {
   fixJsonProblems,
   getConfiguredDate,
+  getTransactionsSummary,
   getBankStatementTransactionsText,
   getCreditCardStatementTransactionsText,
-  getTransactionsSummary,
 } from '../common/parse'
 import { OfxStructure } from '../@types/ofx/index'
 import { CustomExtractor } from '../interfaces/custom-extractor.interface'
@@ -51,8 +57,18 @@ export class OfxExtractor extends CustomExtractor {
     const transactions = bankTransactions.length
       ? bankTransactions
       : creditCardTransactions
-    const startMatch = data.match(/<DTSTART>([^\n<]+)/)
-    const endMatch = data.match(/<DTEND>([^\n<]+)/)
+    const blockStart = bankTransactions.length
+      ? BANK_SERVICE_START
+      : CREDIT_CARD_SERVICE_START
+    const blockEnd = bankTransactions.length ? BANK_SERVICE_END : CREDIT_CARD_SERVICE_END
+    const serviceStartIndex = data.indexOf(blockStart)
+    const serviceEndIndex = data.indexOf(blockEnd)
+    const sourceBlock =
+      serviceStartIndex >= 0 && serviceEndIndex > serviceStartIndex
+        ? data.slice(serviceStartIndex, serviceEndIndex + blockEnd.length)
+        : ''
+    const startMatch = sourceBlock.match(/<DTSTART>([^\n<]+)/)
+    const endMatch = sourceBlock.match(/<DTEND>([^\n<]+)/)
     const summary = getTransactionsSummary(
       transactions || [],
     )

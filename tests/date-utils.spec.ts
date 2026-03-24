@@ -16,6 +16,16 @@ describe('Date parsing utilities', () => {
     expect(parsed?.toISOString()).toBe('2026-03-24T10:20:30.000Z')
   })
 
+  test('Should parse timezone-less ISO datetime as UTC', () => {
+    const parsed = parseDateToUtc('2026-03-24T10:20:30')
+    expect(parsed?.toISOString()).toBe('2026-03-24T10:20:30.000Z')
+  })
+
+  test('Should parse separated formatted dates (d/M/y)', () => {
+    const parsed = parseDateToUtc('09/03/2018')
+    expect(parsed?.toISOString()).toBe('2018-03-09T00:00:00.000Z')
+  })
+
   test('Should parse OFX compact datetime parts', () => {
     const parts = parseDateParts('20260324102030')
     expect(parts).toBeDefined()

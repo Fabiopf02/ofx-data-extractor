@@ -7,7 +7,7 @@ import {
 } from '../@types/common'
 import { OfxResponse, OfxStructure } from '../@types/ofx/index'
 import { StatementTransaction } from '../@types/ofx/common'
-import { formatDate, parseDateToUtc } from './date'
+import { parseDateToUtc } from './date'
 import { isDebt } from './helpers'
 
 type TransactionContext = {
@@ -55,9 +55,7 @@ function resolvePostedAt(
     return { value: dateValue }
   }
 
-  if (dateMode === 'formatted') {
-    return { value: formatDate(dateValue, options.formatDate || 'y-M-d') }
-  }
+  if (dateMode === 'formatted') return { value: dateValue }
 
   const parsedDate = parseDateToUtc(dateValue)
   if (!parsedDate) {
@@ -238,7 +236,7 @@ export function validateOfxData(data: OfxResponse): ValidationReport {
     })
   }
 
-  const fitIdCounter: { [key: string]: number } = {}
+  const fitIdCounter = new Map<string, number>()
 
   transactions.forEach(item => {
     const fitId = String(item.transaction.FITID || '')
@@ -250,7 +248,7 @@ export function validateOfxData(data: OfxResponse): ValidationReport {
         path: item.path,
       })
     } else {
-      fitIdCounter[fitId] = (fitIdCounter[fitId] || 0) + 1
+      fitIdCounter.set(fitId, (fitIdCounter.get(fitId) || 0) + 1)
     }
 
     if (parseAmount(item.transaction.TRNAMT) === null) {
@@ -272,7 +270,8 @@ export function validateOfxData(data: OfxResponse): ValidationReport {
     }
   })
 
-  const duplicatedFitIds = Object.values(fitIdCounter).filter(v => v > 1).length
+  const duplicatedFitIds = Array.from(fitIdCounter.values()).filter(v => v > 1)
+    .length
   if (duplicatedFitIds > 0) {
     warnings.push({
       code: 'DUPLICATED_FITID',

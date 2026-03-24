@@ -1,5 +1,12 @@
 import { Extractor } from '../implementations/extractor'
-import { ExtractorConfig, MetaData } from '../@types/common'
+import {
+  ExtractorConfig,
+  MetaData,
+  NormalizeOptions,
+  NormalizedOfxData,
+  OfxDiagnostic,
+  ValidationReport,
+} from '../@types/common'
 import { OfxResponse, OfxStructure } from '../@types/ofx/index'
 import { OfxExtractor } from '../implementations/ofx-extractor'
 import { Reader } from '../implementations/reader'
@@ -54,5 +61,17 @@ export class Ofx {
 
   toJson(): OfxResponse {
     return this.extractor.toJson()
+  }
+
+  toNormalized(options?: NormalizeOptions): NormalizedOfxData {
+    return this.extractor.toNormalized(options)
+  }
+
+  validate(): ValidationReport {
+    return this.extractor.validate()
+  }
+
+  getWarnings(): OfxDiagnostic[] {
+    return this.extractor.getWarnings()
   }
 }

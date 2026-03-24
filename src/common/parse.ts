@@ -13,7 +13,7 @@ import {
   START_STATEMENT_TRANSACION,
 } from './constants'
 import { ExtractorConfig } from '../@types/common'
-import { formatDate } from './date'
+import { formatDate, parseDateToUtc } from './date'
 import { isDebt } from './helpers'
 import type { StatementTransaction } from '../@types/ofx/common'
 
@@ -79,6 +79,11 @@ export function getConfiguredDate({
   dateString,
   formatDate: format = 'y-M-d',
 }: GetDateParams) {
+  const isOfxCompactDate = /^\d{8}(\d{6})?(\.\d+)?(\[[^\]]+\])?$/.test(
+    dateString,
+  )
+  if (!isOfxCompactDate) return dateString
+  if (!parseDateToUtc(dateString)) return dateString
   return formatDate(dateString, format)
 }
 

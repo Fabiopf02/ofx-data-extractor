@@ -2,28 +2,27 @@ const { minify } = require('rollup-plugin-esbuild')
 const typescript = require('@rollup/plugin-typescript')
 const commonjs = require('@rollup/plugin-commonjs')
 const nodeResolve = require('@rollup/plugin-node-resolve')
-const lib = require('./package.json')
 
 /**
  * @type {import('rollup').RollupOptions}
  */
 module.exports = () => {
-  const year = new Date().getFullYear()
-  const banner = `// Ofx-data-extractor v${lib.version} Copyright (c) ${year} ${lib.author}`
-
   return [
     {
       input: 'src/index.ts',
-      treeshake: true,
+      treeshake: {
+        moduleSideEffects: false,
+        propertyReadSideEffects: false,
+        tryCatchDeoptimization: false,
+      },
       plugins: [
         typescript({ declaration: false }),
-        commonjs(),
         nodeResolve(),
+        commonjs(),
         minify({
           keepNames: false,
           treeShaking: true,
           minify: true,
-          banner,
           globalName: 'ofx',
         }),
       ],

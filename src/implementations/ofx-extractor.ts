@@ -1,8 +1,15 @@
 import {
+  BANK_SERVICE_END,
+  BANK_SERVICE_START,
+  CREDIT_CARD_SERVICE_END,
+  CREDIT_CARD_SERVICE_START,
+} from '../common/constants'
+import {
   fixJsonProblems,
+  getConfiguredDate,
+  getTransactionsSummary,
   getBankStatementTransactionsText,
   getCreditCardStatementTransactionsText,
-  getTransactionsSummary,
 } from '../common/parse'
 import { OfxStructure } from '../@types/ofx/index'
 import { CustomExtractor } from '../interfaces/custom-extractor.interface'
@@ -35,15 +42,65 @@ export class OfxExtractor extends CustomExtractor {
   }
 
   getTransactionsSummary(data: string) {
-    const jsonData = this.getContent(data)
-    const { DTEND, DTSTART, ...restData } =
-      jsonData.OFX.BANKMSGSRSV1.STMTTRNRS.STMTRS.BANKTRANLIST
+    let bankTransactions: any[] = []
+    let creditCardTransactions: any[] = []
+    const parserMode = this.configInstance?.getConfig?.().parserMode || 'strict'
+    let bankError: unknown = null
+    let creditCardError: unknown = null
+    try {
+      bankTransactions = this.getBankTransferList(data) || []
+    } catch (error) {
+      bankError = error
+      bankTransactions = []
+    }
+    try {
+      creditCardTransactions = this.getCreditCardTransferList(data) || []
+    } catch (error) {
+      creditCardError = error
+      creditCardTransactions = []
+    }
+    const hasStatementTransaction = data.includes('<STMTTRN>')
+    if (
+      parserMode === 'strict' &&
+      bankError &&
+      creditCardError &&
+      hasStatementTransaction
+    ) {
+      throw bankError
+    }
+    const transactions = bankTransactions.length
+      ? bankTransactions
+      : creditCardTransactions
+    const blockStart = bankTransactions.length
+      ? BANK_SERVICE_START
+      : CREDIT_CARD_SERVICE_START
+    const blockEnd = bankTransactions.length ? BANK_SERVICE_END : CREDIT_CARD_SERVICE_END
+    const serviceStartIndex = data.indexOf(blockStart)
+    const serviceEndIndex = data.indexOf(blockEnd)
+    const sourceBlock =
+      serviceStartIndex >= 0 && serviceEndIndex > serviceStartIndex
+        ? data.slice(serviceStartIndex, serviceEndIndex + blockEnd.length)
+        : ''
+    const startMatch = sourceBlock.match(/<DTSTART>([^\n<]+)/)
+    const endMatch = sourceBlock.match(/<DTEND>([^\n<]+)/)
     const summary = getTransactionsSummary(
-      restData.STMTTRN || restData.STRTTRN || [],
+      transactions || [],
     )
+    const formattedStart = startMatch?.[1]
+      ? getConfiguredDate({
+          dateString: startMatch[1],
+          formatDate: this.configInstance.getConfig().formatDate,
+        })
+      : ''
+    const formattedEnd = endMatch?.[1]
+      ? getConfiguredDate({
+          dateString: endMatch[1],
+          formatDate: this.configInstance.getConfig().formatDate,
+        })
+      : ''
     return {
-      dateStart: DTSTART,
-      dateEnd: DTEND,
+      dateStart: formattedStart,
+      dateEnd: formattedEnd,
       ...summary,
     } as unknown as TransactionsSummary
   }

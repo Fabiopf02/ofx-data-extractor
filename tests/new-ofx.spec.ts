@@ -132,4 +132,16 @@ describe('Tests in the Node.js environment', () => {
     expect(extractorInstance.toJson()).not.toBeNull
     expect(extractorInstance.getTransactionsSummary()).not.toBeNull
   })
+
+  test.concurrent('Should return summary even without DTSTART/DTEND', async () => {
+    const file = readFileSync(path.resolve(__dirname, 'example5.ofx'))
+    const withoutRange = file
+      .toString()
+      .replace(/<DTSTART>[^\n<]+/g, '')
+      .replace(/<DTEND>[^\n<]+/g, '')
+    const extractorInstance = extractor.data(Reader.fromString(withoutRange))
+    const summary = extractorInstance.getTransactionsSummary()
+    expect(summary.dateStart).toBe('')
+    expect(summary.dateEnd).toBe('')
+  })
 })

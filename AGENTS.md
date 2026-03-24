@@ -15,7 +15,7 @@ TypeScript library for OFX parsing, normalization and validation (Node.js + Brow
 6. `src/common/analysis.ts` (normalization + validation)
 7. `src/common/date.ts` (date parsing/validation)
 
-## Stable Public API (v1.x)
+## Public API Contracts
 Treat these as stable contracts:
 - `Ofx`
   - `fromBuffer`, `fromBlob`, `config`, `getType`, `getHeaders`
@@ -23,8 +23,8 @@ Treat these as stable contracts:
   - `getContent`, `toJson`
   - `toNormalized`, `validate`, `getWarnings`
 
-Do not remove or change method signatures in v1.x.
-Additive changes only.
+Prefer additive changes.
+If a contract change is required, follow the contract-change process below.
 
 ## Parser Modes
 - `strict` (default): throws on parse failures.
@@ -57,6 +57,25 @@ Run these before finishing any change:
 For coverage-focused work:
 - `npm run test:coverage -- --runInBand`
 
+## Minimum Quality Checklist
+Use this checklist before opening or updating a PR:
+1. Tests
+- Existing suite passes without regressions.
+- New/changed behavior has targeted tests (including edge cases where applicable).
+2. Security
+- Input parsing changes reviewed for malformed/untrusted input handling.
+- No unsafe `eval`-style behavior or dependency changes without review.
+3. Performance
+- No obvious quadratic/expensive loops on large OFX inputs.
+- For hot-path changes, run a simple comparison scenario and note impact in PR.
+4. Documentation
+- `README.md` updated for any public behavior or API change.
+- `CHANGELOG.md` updated with impact and migration notes when needed.
+- Release template sections remain coherent with delivered behavior.
+5. Compatibility
+- Output shapes and method signatures remain stable unless explicitly approved.
+- If a contract change exists, include deprecation/fallback or migration path.
+
 ## Change Routing (Where to edit)
 - New user-facing behavior/API: `main.ts` + `extractor.ts` + `index.ts` + README/tests.
 - OFX extraction behavior: `ofx-extractor.ts` and/or `parse.ts`.
@@ -75,8 +94,15 @@ When behavior changes:
 2. Update `CHANGELOG.md` sections including explicit `Breaking Changes`
 3. Keep `.github/RELEASE_TEMPLATE.md` structure
 
+## Contract-Change Process
+When a breaking change is truly needed:
+1. Document rationale and impacted contracts in PR description.
+2. Prefer a compatibility bridge first (fallback, alias, deprecation period).
+3. Add explicit migration notes with before/after examples.
+4. Mark `Breaking Changes` clearly in `CHANGELOG.md` and release notes.
+5. Obtain explicit maintainer approval before merge.
+
 ## Guardrails
-- Do not introduce breaking changes in v1.x.
 - Do not silently change output shapes of existing methods.
 - Do not bypass tests/lint/build checks.
 - Avoid broad refactors without targeted tests.

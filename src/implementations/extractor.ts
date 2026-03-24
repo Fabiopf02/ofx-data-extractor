@@ -156,20 +156,16 @@ export class Extractor<T = any> implements IExtractor<T> {
   toNormalized(options: NormalizeOptions = {}): NormalizedOfxData {
     this.beginOperation()
     const data = this.getResponseInternal()
-    const normalized = normalizeOfxData(data, {
+    return normalizeOfxData(data, {
       ...options,
       formatDate: options.formatDate || this.customExtractorInstance.configInstance.getConfig().formatDate,
     })
-    this.diagnostics.push(...normalized.warnings)
-    return normalized
   }
 
   validate(): ValidationReport {
     this.beginOperation()
     const data = this.getResponseInternal()
-    const result = validateOfxData(data)
-    this.diagnostics.push(...result.warnings)
-    return result
+    return validateOfxData(data)
   }
 
   getWarnings(): OfxDiagnostic[] {

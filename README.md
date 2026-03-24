@@ -56,6 +56,7 @@ console.log(ofx.getTransactionsSummary())
 
 ## Browser (`fromBlob` is async)
 
+```ts
 import { Ofx } from 'ofx-data-extractor'
 
 async function handleFile(event: Event) {

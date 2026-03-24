@@ -31,42 +31,7 @@ const normalized = ofx.toNormalized()
 const validation = ofx.validate()
 ```
 
-## API
-
-### `Ofx`
-
-- `new Ofx(data: string, config?: ExtractorConfig)`
-- `static fromBuffer(data: Buffer): Ofx`
-- `static fromBlob(data: Blob): Promise<Ofx>`
-- `config(options: ExtractorConfig): this`
-- `getType(): Types`
-- `getHeaders(): MetaData`
-- `getBankTransferList(): StatementTransaction[]`
-- `getCreditCardTransferList(): StatementTransaction[]`
-- `getTransactionsSummary(): TransactionsSummary`
-- `getContent(): OfxStructure`
-- `toJson(): OfxResponse`
-- `toNormalized(options?: NormalizeOptions): NormalizedOfxData`
-- `validate(): ValidationReport`
-- `getWarnings(): OfxDiagnostic[]`
-
-## Configuration
-
-`ExtractorConfig` options:
-
-- `nativeTypes?: boolean`
-- `fitId?: 'normal' | 'separated'`
-- `formatDate?: string`
-- `parserMode?: 'strict' | 'lenient'`
-
-`parserMode` behavior:
-
-- `strict` (default): throws on parser failures.
-- `lenient`: returns fallback data and stores diagnostics in `getWarnings()`.
-
-`strict`/`lenient` are standard parser-mode terms in open-source tooling.
-
-## Node.js Example
+## Node.js
 
 ```ts
 import fs from 'fs'
@@ -74,13 +39,11 @@ import { Ofx } from 'ofx-data-extractor'
 
 const file = fs.readFileSync('/path/to/file.ofx')
 const ofx = Ofx.fromBuffer(file)
-
-console.log(ofx.toJson())
+console.log(ofx.getTransactionsSummary())
 ```
 
-## Browser Example (async `fromBlob`)
+## Browser (`fromBlob` is async)
 
-```ts
 import { Ofx } from 'ofx-data-extractor'
 
 async function handleFile(event: Event) {
@@ -93,114 +56,48 @@ async function handleFile(event: Event) {
 }
 ```
 
-## `toJson()` vs `toNormalized()`
+## Main Public API (`Ofx`)
 
-- `toJson()`: keeps structure close to OFX blocks.
-- `toNormalized()`: returns product-ready transactions with normalized fields.
+- `new Ofx(data: string, config?: ExtractorConfig)`
+- `Ofx.fromBuffer(buffer: Buffer)`
+- `Ofx.fromBlob(blob: Blob)`
+- `config(options)`
+- `getType()`
+- `getHeaders()`
+- `getBankTransferList()`
+- `getCreditCardTransferList()`
+- `getTransactionsSummary()`
+- `getContent()`
+- `toJson()`
+- `toNormalized(options?)`
+- `validate()`
+- `getWarnings()`
 
-Normalized transaction fields:
+## Configuration (Extract)
 
-- `source: 'bank' | 'credit_card'`
-- `direction: 'credit' | 'debit'`
-- `amount`
-- `amountAbs`
-- `postedAt`
-- `description`
-- `descriptionNormalized`
-- `fitId`
-- `currency`
-- `account`
-- `institution`
-- `raw`
-- `warnings`
-
-Normalization options (`NormalizeOptions`):
-
-- `amountMode?: 'string' | 'number' | 'cents'`
-- `dateMode?: 'raw' | 'formatted' | 'iso' | 'date' | 'timestamp'`
+- `nativeTypes?: boolean`
+- `fitId?: 'normal' | 'separated'`
 - `formatDate?: string`
+- `parserMode?: 'strict' | 'lenient'`
 
-## Validation and Warnings
+Parser mode:
 
-Use `validate()` for import checks and `getWarnings()` for parser diagnostics.
+- `strict` (default): parsing errors throw.
+- `lenient`: parsing errors fallback and are collected via `getWarnings()`.
 
-Example checks include:
+## Developer Documentation
 
-- missing OFX block
-- missing or duplicated FITID
-- invalid amount
-- invalid DTPOSTED
-- no transactions found
+- [API Reference](docs/api.md)
+- [Normalization Guide](docs/normalization.md)
+- [Validation Guide](docs/validation.md)
+- [Recipes](docs/recipes.md)
+- [Migration Guide](docs/migration.md)
 
-## Date Handling Guarantees
+## Examples
 
-Current date behavior is intentionally conservative and deterministic:
-
-- OFX date strings are parsed using explicit rules (not implicit locale parsing).
-- Date normalization uses UTC (`Date.UTC`) to avoid local-timezone drift.
-- The parser accepts:
-  - OFX compact datetime (`YYYYMMDDhhmmss`, with optional OFX timezone suffix)
-  - `YYYY-MM-DD`
-  - ISO datetime strings
-- Invalid dates are rejected with warnings instead of silently coerced.
-- Leap-year and date/time bounds are validated.
-
-### Known Limits
-
-- OFX timezone suffix offsets (e.g. `[-3:BRT]`) are currently ignored for arithmetic conversion and treated as metadata in the raw string.
-- `dateMode: 'formatted'` is output-oriented and should not be used as canonical storage for downstream calculations.
-
-### Future Improvements (Planned)
-
-- Explicit offset-aware conversion for OFX timezone suffixes.
-- Optional strict chronological validation against statement windows (`DTSTART`/`DTEND`).
-- Optional canonical timestamp output with original offset metadata attached.
-
-## Stability & API Surface
-
-### Stable API (v1.x)
-
-- `Ofx` class and its public methods documented above.
-
-### Advanced/Internal API
-
-The following exports are available for advanced integrations but are considered lower-level:
-
-- `Extractor`
-- `OfxExtractor`
-- `Reader`
-- parser helpers (`fixJsonProblems`, `formatDate`, etc.)
-
-These are maintained for compatibility, but changes can happen faster than the `Ofx` facade.
-
-### Deprecation Policy
-
-- APIs are first documented as deprecated.
-- Removals only occur in major releases.
-- Migration guidance is always included in release notes.
-
-## Versioning Policy
-
-- `patch`: bug fixes without contract changes.
-- `minor`: additive features and deprecations.
-- `major`: breaking changes only.
-
-## Upgrade Guide
-
-### v1.5.0
-
-- Added: `toNormalized(options?)`
-- Added: `validate()`
-- Added: `getWarnings()`
-- Added: `parserMode: 'strict' | 'lenient'`
-- Changed: transaction summary now works for bank-only and credit-card-only structures.
-
-Adoption checklist:
-
-1. Keep existing `toJson()` integrations unchanged.
-2. Start using `toNormalized()` for product-facing transaction pipelines.
-3. Enable `parserMode: 'lenient'` for user-upload flows and inspect `getWarnings()`.
-4. Add `validate()` before persistence/import finalization.
+- [Node basic](examples/node-basic.ts)
+- [Browser basic](examples/browser-basic.ts)
+- [Normalize + validate](examples/normalize-and-validate.ts)
 
 ## License
 

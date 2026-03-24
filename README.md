@@ -1,98 +1,210 @@
 # [ofx-data-extractor](https://www.npmjs.com/package/ofx-data-extractor)
 
-[![npm version](https://badge.fury.io/js/ofx-data-extractor.svg)](https://badge.fury.io/js/ofx-data-extractor) [![MIT License][license-image]][license-url]
+[![npm version](https://badge.fury.io/js/ofx-data-extractor.svg)](https://badge.fury.io/js/ofx-data-extractor)
+[![MIT License][license-image]][license-url]
 [![codecov](https://codecov.io/gh/Fabiopf02/ofx-data-extractor/branch/main/graph/badge.svg?token=L4A7E4H8IN)](https://codecov.io/gh/Fabiopf02/ofx-data-extractor)
 [![Release Package](https://github.com/Fabiopf02/ofx-data-extractor/actions/workflows/release.yml/badge.svg)](https://github.com/Fabiopf02/ofx-data-extractor/actions/workflows/release.yml)
 
-## Ofx Data Extractor and Formatter
-This is a `Node.js` and `Browser` module written in `TypeScript` that provides a utility for extracting data from an `OFX` file. The module can also format some of the data and retrieve specific parts of the file if requested.
+`ofx-data-extractor` is a TypeScript library for parsing, normalizing and validating OFX files in Node.js and browser environments.
 
-### Installation
-You can install this module using the Node Package Manager (`NPM`) with the following command:
+## Installation
 
-**npm**
 ```bash
 npm install ofx-data-extractor
 ```
-**yarn**
+
 ```bash
 yarn add ofx-data-extractor
 ```
 
-### Methods
-The `Ofx` class provides the following methods:
+## Quick Start
 
-- `getType(): Types`: Used to get type of transactions from ofx (BANK or CREDIT_CARD)
-- `fromBuffer(data: Buffer)`: Used to read files on the node. Returns the methods
-- `fromBlob(data: Blob)`: Used to read files in the browser. Returns the methods below.
-- `config(options: OfxConfig)`: Used for formatting the generated json.`
-- `getHeaders(): OFXMetaData`: Returns the metadata section of the OFX file as an object.
-- `getBankTransferList(): Pick<BankTransferList, 'STRTTRN'>`: Returns a list of bank transfer transactions as an object.
-- `getCreditCardTransferList(): Pick<BankTransferList, 'STRTTRN'>`: Returns a list of credit card transactions as an object.
-- `getTransactionsSummary()`: Object: Returns a summary of transactions for a bank statement as an object.
-- `getContent(): OfxStructure`: Returns the OFX file content as an object.
-- `toJson(): OfxResponse`: Returns the entire OFX file content as a JSON object.
-
-### Usage
-The module provides a class called Ofx that can be used to extract and format data from an `OFX` file. Here's an example of how to use it:
-
-```typescript
+```ts
 import { Ofx } from 'ofx-data-extractor'
 
 const data = 'OFXHEADER:100\nDATA:OFXSGML\nVERSION:102\n...'
-const ofx = new Ofx(data) // works in node.js and browser
+const ofx = new Ofx(data)
 
-const headers = ofx.getHeaders()
-console.log(headers)
-
-const transactionsSummary = ofx.getTransactionsSummary()
-console.log(transactionsSummary)
-
-const bankTransferList = ofx.getBankTransferList()
-console.log(bankTransferList)
-
-const ofxResponse = ofx.toJson()
-console.log(ofxResponse)
+const raw = ofx.toJson()
+const summary = ofx.getTransactionsSummary()
+const normalized = ofx.toNormalized()
+const validation = ofx.validate()
 ```
-### Constructor
-The `Ofx` class constructor takes in two arguments:
 
-`data`: The `OFX` file content as a string or a Buffer.
-`config`: Optional configuration options for formatting the OFX data.
+## API
 
-### Read data - static methods (`Node.js`)
-```typescript
-import { Ofx } from 'ofx-data-extractor'
+### `Ofx`
+
+- `new Ofx(data: string, config?: ExtractorConfig)`
+- `static fromBuffer(data: Buffer): Ofx`
+- `static fromBlob(data: Blob): Promise<Ofx>`
+- `config(options: ExtractorConfig): this`
+- `getType(): Types`
+- `getHeaders(): MetaData`
+- `getBankTransferList(): StatementTransaction[]`
+- `getCreditCardTransferList(): StatementTransaction[]`
+- `getTransactionsSummary(): TransactionsSummary`
+- `getContent(): OfxStructure`
+- `toJson(): OfxResponse`
+- `toNormalized(options?: NormalizeOptions): NormalizedOfxData`
+- `validate(): ValidationReport`
+- `getWarnings(): OfxDiagnostic[]`
+
+## Configuration
+
+`ExtractorConfig` options:
+
+- `nativeTypes?: boolean`
+- `fitId?: 'normal' | 'separated'`
+- `formatDate?: string`
+- `parserMode?: 'strict' | 'lenient'`
+
+`parserMode` behavior:
+
+- `strict` (default): throws on parser failures.
+- `lenient`: returns fallback data and stores diagnostics in `getWarnings()`.
+
+`strict`/`lenient` are standard parser-mode terms in open-source tooling.
+
+## Node.js Example
+
+```ts
 import fs from 'fs'
-
-const file = await fs.readFile('/path/to/file')
-const ofx = await Ofx.fromBuffer(file)
-
-const ofxResponse = ofx.toJson()
-console.log(ofxResponse)
-```
-
-### Read data - static methods (`Browser`)
-```typescript
 import { Ofx } from 'ofx-data-extractor'
 
-function handleFile(event) {
-    const ofx = Ofx.fromBlob(event.target.files[0])
-    const ofxResponse = ofx.toJson()
-    console.log(ofxResponse)
-}
+const file = fs.readFileSync('/path/to/file.ofx')
+const ofx = Ofx.fromBuffer(file)
 
-// tsx/jsx/html
-<input type="file" onChange={handleFile} />
+console.log(ofx.toJson())
 ```
 
+## Browser Example (async `fromBlob`)
 
-### Configuration
-The `Ofx` (`constructor` and `config` method) class can be configured with the following options:
+```ts
+import { Ofx } from 'ofx-data-extractor'
 
-- `formatDate`: A function that takes in a date string and returns a formatted date string.
-- `fitId`: A string that determines how the financial institution transaction ID is handled. Possible values are "separated" (the default) or "included".
-- `nativeTypes`: A boolean value that determines whether numeric fields should be represented as numbers or strings in the resulting JSON object.
+async function handleFile(event: Event) {
+  const input = event.target as HTMLInputElement
+  const file = input.files?.[0]
+  if (!file) return
+
+  const ofx = await Ofx.fromBlob(file)
+  console.log(ofx.toJson())
+}
+```
+
+## `toJson()` vs `toNormalized()`
+
+- `toJson()`: keeps structure close to OFX blocks.
+- `toNormalized()`: returns product-ready transactions with normalized fields.
+
+Normalized transaction fields:
+
+- `source: 'bank' | 'credit_card'`
+- `direction: 'credit' | 'debit'`
+- `amount`
+- `amountAbs`
+- `postedAt`
+- `description`
+- `descriptionNormalized`
+- `fitId`
+- `currency`
+- `account`
+- `institution`
+- `raw`
+- `warnings`
+
+Normalization options (`NormalizeOptions`):
+
+- `amountMode?: 'string' | 'number' | 'cents'`
+- `dateMode?: 'raw' | 'formatted' | 'iso' | 'date' | 'timestamp'`
+- `formatDate?: string`
+
+## Validation and Warnings
+
+Use `validate()` for import checks and `getWarnings()` for parser diagnostics.
+
+Example checks include:
+
+- missing OFX block
+- missing or duplicated FITID
+- invalid amount
+- invalid DTPOSTED
+- no transactions found
+
+## Date Handling Guarantees
+
+Current date behavior is intentionally conservative and deterministic:
+
+- OFX date strings are parsed using explicit rules (not implicit locale parsing).
+- Date normalization uses UTC (`Date.UTC`) to avoid local-timezone drift.
+- The parser accepts:
+  - OFX compact datetime (`YYYYMMDDhhmmss`, with optional OFX timezone suffix)
+  - `YYYY-MM-DD`
+  - ISO datetime strings
+- Invalid dates are rejected with warnings instead of silently coerced.
+- Leap-year and date/time bounds are validated.
+
+### Known Limits
+
+- OFX timezone suffix offsets (e.g. `[-3:BRT]`) are currently ignored for arithmetic conversion and treated as metadata in the raw string.
+- `dateMode: 'formatted'` is output-oriented and should not be used as canonical storage for downstream calculations.
+
+### Future Improvements (Planned)
+
+- Explicit offset-aware conversion for OFX timezone suffixes.
+- Optional strict chronological validation against statement windows (`DTSTART`/`DTEND`).
+- Optional canonical timestamp output with original offset metadata attached.
+
+## Stability & API Surface
+
+### Stable API (v1.x)
+
+- `Ofx` class and its public methods documented above.
+
+### Advanced/Internal API
+
+The following exports are available for advanced integrations but are considered lower-level:
+
+- `Extractor`
+- `OfxExtractor`
+- `Reader`
+- parser helpers (`fixJsonProblems`, `formatDate`, etc.)
+
+These are maintained for compatibility, but changes can happen faster than the `Ofx` facade.
+
+### Deprecation Policy
+
+- APIs are first documented as deprecated.
+- Removals only occur in major releases.
+- Migration guidance is always included in release notes.
+
+## Versioning Policy
+
+- `patch`: bug fixes without contract changes.
+- `minor`: additive features and deprecations.
+- `major`: breaking changes only.
+
+## Upgrade Guide
+
+### v1.5.0
+
+- Added: `toNormalized(options?)`
+- Added: `validate()`
+- Added: `getWarnings()`
+- Added: `parserMode: 'strict' | 'lenient'`
+- Changed: transaction summary now works for bank-only and credit-card-only structures.
+
+Adoption checklist:
+
+1. Keep existing `toJson()` integrations unchanged.
+2. Start using `toNormalized()` for product-facing transaction pipelines.
+3. Enable `parserMode: 'lenient'` for user-upload flows and inspect `getWarnings()`.
+4. Add `validate()` before persistence/import finalization.
+
+## License
+
+MIT
 
 [license-image]: https://img.shields.io/badge/license-MIT-blue.svg?style=flat
 [license-url]: LICENSE

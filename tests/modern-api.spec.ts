@@ -62,6 +62,25 @@ describe('Modern API additions', () => {
     ).toBe(true)
   })
 
+  test('Should keep invalid DTPOSTED raw and emit INVALID_DATE in toNormalized()', () => {
+    const malformed = ofxFile
+      .toString('utf-8')
+      .replace(/<DTPOSTED>[^\n<]+/, '<DTPOSTED>20180ad')
+    const normalized = new Ofx(malformed, { parserMode: 'lenient' }).toNormalized()
+
+    expect(normalized.warnings.some(warning => warning.code === 'INVALID_DATE')).toBe(
+      true,
+    )
+    const invalidRow = normalized.transactions.find(
+      transaction => String((transaction.raw as any).DTPOSTED) === '20180ad',
+    )
+    expect(invalidRow).toBeDefined()
+    expect(invalidRow?.postedAt).toBe('20180ad')
+    expect(
+      invalidRow?.warnings.some(warning => warning.code === 'INVALID_DATE'),
+    ).toBe(true)
+  })
+
   test('Should not flag INVALID_DATE when configured date format is d/M/y', () => {
     const report = new Ofx(ofxFile.toString('utf-8'), {
       parserMode: 'lenient',

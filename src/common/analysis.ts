@@ -51,11 +51,20 @@ function resolvePostedAt(
     }
   }
 
-  if (dateMode === 'raw') {
+  if (dateMode === 'raw' || dateMode === 'formatted') {
+    const parsedRawDate = parseDateToUtc(dateValue)
+    if (!parsedRawDate) {
+      return {
+        value: dateValue,
+        warning: {
+          code: 'INVALID_DATE',
+          message: `Unable to parse date '${dateValue}'.`,
+          severity: 'warning',
+        },
+      }
+    }
     return { value: dateValue }
   }
-
-  if (dateMode === 'formatted') return { value: dateValue }
 
   const parsedDate = parseDateToUtc(dateValue)
   if (!parsedDate) {

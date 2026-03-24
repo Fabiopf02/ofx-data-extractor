@@ -1,5 +1,6 @@
 import {
   fixJsonProblems,
+  getConfiguredDate,
   getBankStatementTransactionsText,
   getCreditCardStatementTransactionsText,
   getTransactionsSummary,
@@ -35,15 +36,41 @@ export class OfxExtractor extends CustomExtractor {
   }
 
   getTransactionsSummary(data: string) {
-    const jsonData = this.getContent(data)
-    const { DTEND, DTSTART, ...restData } =
-      jsonData.OFX.BANKMSGSRSV1.STMTTRNRS.STMTRS.BANKTRANLIST
+    let bankTransactions: any[] = []
+    let creditCardTransactions: any[] = []
+    try {
+      bankTransactions = this.getBankTransferList(data) || []
+    } catch {
+      bankTransactions = []
+    }
+    try {
+      creditCardTransactions = this.getCreditCardTransferList(data) || []
+    } catch {
+      creditCardTransactions = []
+    }
+    const transactions = bankTransactions.length
+      ? bankTransactions
+      : creditCardTransactions
+    const startMatch = data.match(/<DTSTART>([^\n<]+)/)
+    const endMatch = data.match(/<DTEND>([^\n<]+)/)
     const summary = getTransactionsSummary(
-      restData.STMTTRN || restData.STRTTRN || [],
+      transactions || [],
     )
+    const formattedStart = startMatch?.[1]
+      ? getConfiguredDate({
+          dateString: startMatch[1],
+          formatDate: this.configInstance.getConfig().formatDate,
+        })
+      : ''
+    const formattedEnd = endMatch?.[1]
+      ? getConfiguredDate({
+          dateString: endMatch[1],
+          formatDate: this.configInstance.getConfig().formatDate,
+        })
+      : ''
     return {
-      dateStart: DTSTART,
-      dateEnd: DTEND,
+      dateStart: formattedStart,
+      dateEnd: formattedEnd,
       ...summary,
     } as unknown as TransactionsSummary
   }

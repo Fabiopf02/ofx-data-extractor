@@ -9,4 +9,17 @@ export type { BankTransactionList } from './@types/ofx/banking'
 export { Reader } from './implementations/reader'
 export { OfxExtractor } from './implementations/ofx-extractor'
 export { Extractor } from './implementations/extractor'
-export type { MetaData, ExtractorConfig, DateResponse } from './@types/common'
+export type {
+  MetaData,
+  ExtractorConfig,
+  DateResponse,
+  ValidationReport,
+  ValidationStats,
+  OfxDiagnostic,
+  NormalizeOptions,
+  NormalizedTransaction,
+  NormalizedOfxData,
+  ParserMode,
+  AmountMode,
+  DateMode,
+} from './@types/common'

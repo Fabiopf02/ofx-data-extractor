@@ -38,10 +38,14 @@ export type ConfigDate = {
 }
 
 export type ConfigFitId = 'normal' | 'separated'
+export type ParserMode = 'strict' | 'lenient'
+export type AmountMode = 'string' | 'number' | 'cents'
+export type DateMode = 'raw' | 'formatted' | 'iso' | 'date' | 'timestamp'
 
 export type ExtractorConfig = ConfigDate & {
   fitId?: ConfigFitId
   nativeTypes?: boolean
+  parserMode?: ParserMode
 }
 
 export type TransactionsSummary = {
@@ -56,4 +60,56 @@ export type TransactionsSummary = {
 export enum Types {
   'BANK' = 'BANK',
   'CREDIT_CARD' = 'CREDIT_CARD',
+}
+
+export type OfxSeverity = 'warning' | 'error'
+
+export type OfxDiagnostic = {
+  code: string
+  message: string
+  severity: OfxSeverity
+  path?: string
+  context?: string
+}
+
+export type ValidationStats = {
+  totalTransactions: number
+  bankTransactions: number
+  creditCardTransactions: number
+  duplicatedFitIds: number
+}
+
+export type ValidationReport = {
+  isValid: boolean
+  warnings: OfxDiagnostic[]
+  errors: OfxDiagnostic[]
+  stats: ValidationStats
+}
+
+export type NormalizeOptions = ConfigDate & {
+  amountMode?: AmountMode
+  dateMode?: DateMode
+}
+
+export type NormalizedDirection = 'credit' | 'debit'
+
+export type NormalizedTransaction = {
+  source: 'bank' | 'credit_card'
+  direction: NormalizedDirection
+  amount: number | string | null
+  amountAbs: number | string | null
+  postedAt: string | number | Date | null
+  description: string
+  descriptionNormalized: string
+  fitId: string
+  currency: string | null
+  account: Record<string, any> | null
+  institution: Record<string, any> | null
+  raw: Record<string, any>
+  warnings: OfxDiagnostic[]
+}
+
+export type NormalizedOfxData = {
+  transactions: NormalizedTransaction[]
+  warnings: OfxDiagnostic[]
 }

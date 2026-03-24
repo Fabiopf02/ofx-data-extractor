@@ -30,3 +30,105 @@ export function formatDate(date: string, format: string) {
   }
   return result
 }
+
+type ParsedDateParts = {
+  year: number
+  month: number
+  day: number
+  hour: number
+  minutes: number
+  seconds: number
+}
+
+function isLeapYear(year: number) {
+  if (year % 400 === 0) return true
+  if (year % 100 === 0) return false
+  return year % 4 === 0
+}
+
+function getDaysInMonth(month: number, year: number) {
+  if (month === 2) return isLeapYear(year) ? 29 : 28
+  if ([4, 6, 9, 11].includes(month)) return 30
+  return 31
+}
+
+function parseIsoDate(date: string): ParsedDateParts | null {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) return null
+  const [year, month, day] = date.split('-').map(Number)
+  return {
+    year,
+    month,
+    day,
+    hour: 0,
+    minutes: 0,
+    seconds: 0,
+  }
+}
+
+function parseIsoDateTime(date: string): ParsedDateParts | null {
+  if (!/^\d{4}-\d{2}-\d{2}T/.test(date)) return null
+  const asDate = new Date(date)
+  if (Number.isNaN(asDate.getTime())) return null
+  return {
+    year: asDate.getUTCFullYear(),
+    month: asDate.getUTCMonth() + 1,
+    day: asDate.getUTCDate(),
+    hour: asDate.getUTCHours(),
+    minutes: asDate.getUTCMinutes(),
+    seconds: asDate.getUTCSeconds(),
+  }
+}
+
+function parseOfxDateString(date: string): ParsedDateParts | null {
+  const withoutTimezone = date.split('[')[0]
+  const normalized = withoutTimezone.split('.')[0]
+  if (!/^\d{8}(\d{6})?$/.test(normalized)) return null
+  return {
+    year: Number(normalized.slice(0, 4)),
+    month: Number(normalized.slice(4, 6)),
+    day: Number(normalized.slice(6, 8)),
+    hour: Number(normalized.slice(8, 10) || '00'),
+    minutes: Number(normalized.slice(10, 12) || '00'),
+    seconds: Number(normalized.slice(12, 14) || '00'),
+  }
+}
+
+export function parseDateParts(date: string): ParsedDateParts | null {
+  return parseIsoDate(date) || parseIsoDateTime(date) || parseOfxDateString(date)
+}
+
+export function isValidParsedDate(parts: ParsedDateParts): boolean {
+  if (
+    !Number.isFinite(parts.year) ||
+    !Number.isFinite(parts.month) ||
+    !Number.isFinite(parts.day) ||
+    !Number.isFinite(parts.hour) ||
+    !Number.isFinite(parts.minutes) ||
+    !Number.isFinite(parts.seconds)
+  ) {
+    return false
+  }
+
+  if (parts.month < 1 || parts.month > 12) return false
+  if (parts.day < 1 || parts.day > getDaysInMonth(parts.month, parts.year))
+    return false
+  if (parts.hour < 0 || parts.hour > 23) return false
+  if (parts.minutes < 0 || parts.minutes > 59) return false
+  if (parts.seconds < 0 || parts.seconds > 59) return false
+  return true
+}
+
+export function parseDateToUtc(date: string): Date | null {
+  const parts = parseDateParts(date)
+  if (!parts || !isValidParsedDate(parts)) return null
+  return new Date(
+    Date.UTC(
+      parts.year,
+      parts.month - 1,
+      parts.day,
+      parts.hour,
+      parts.minutes,
+      parts.seconds,
+    ),
+  )
+}

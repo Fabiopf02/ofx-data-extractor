@@ -22,13 +22,43 @@ function separatePartsOfDate(date: string) {
   }
 }
 
-export function formatDate(date: string, format: string) {
-  const parts = separatePartsOfDate(date)
+function applyDateFormat(format: string, parts: Record<string, string>) {
+  const order = ['yyyy', 'yy', 'y', 'MM', 'M', 'dd', 'd', 'hh', 'h', 'mm', 'm', 'ss', 's']
   let result = format
-  for (const [key, value] of Object.entries(parts)) {
-    result = result.replace(key, value)
+  for (const key of order) {
+    result = result.replace(key, parts[key])
   }
   return result
+}
+
+export function formatDate(date: string, format: string) {
+  const parts = separatePartsOfDate(date)
+  return applyDateFormat(format, parts)
+}
+
+export function formatDateFromUtcDate(date: Date, format: string) {
+  const year = String(date.getUTCFullYear())
+  const month = String(date.getUTCMonth() + 1).padStart(2, '0')
+  const day = String(date.getUTCDate()).padStart(2, '0')
+  const hour = String(date.getUTCHours()).padStart(2, '0')
+  const minutes = String(date.getUTCMinutes()).padStart(2, '0')
+  const seconds = String(date.getUTCSeconds()).padStart(2, '0')
+
+  return applyDateFormat(format, {
+    yyyy: year,
+    yy: year.slice(2),
+    y: year,
+    MM: month,
+    M: month,
+    dd: day,
+    d: day,
+    hh: hour,
+    h: hour,
+    mm: minutes,
+    m: minutes,
+    ss: seconds,
+    s: seconds,
+  })
 }
 
 type ParsedDateParts = {

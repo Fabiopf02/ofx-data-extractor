@@ -32,6 +32,15 @@ describe('Modern API additions', () => {
     expect(String(transaction.postedAt)).toContain('T')
   })
 
+  test('Should apply NormalizeOptions.formatDate in formatted mode', () => {
+    const normalized = Ofx.fromBuffer(ofxFile).toNormalized({
+      dateMode: 'formatted',
+      formatDate: 'yy',
+    })
+
+    expect(normalized.transactions[0].postedAt).toBe('18')
+  })
+
   test('Should validate data and report diagnostics for malformed values', () => {
     const fileAsString = ofxFile.toString('utf-8')
     let fitIdCount = 0
@@ -166,6 +175,30 @@ describe('Modern API additions', () => {
     const report = new Ofx(withPrototypeLikeFitId, { parserMode: 'lenient' }).validate()
     expect(report.warnings.some(warning => warning.code === 'DUPLICATED_FITID')).toBe(
       true,
+    )
+  })
+
+  test('Should keep stable fitId values when fitId is separated', () => {
+    const normalized = new Ofx(ofxFile.toString('utf-8'), { fitId: 'separated' }).toNormalized()
+    expect(normalized.transactions[0].fitId).not.toBe('[object Object]')
+
+    const validation = new Ofx(ofxFile.toString('utf-8'), {
+      fitId: 'separated',
+      parserMode: 'lenient',
+    }).validate()
+    expect(validation.stats.duplicatedFitIds).toBe(0)
+  })
+
+  test('Should not mix validation errors into getWarnings()', () => {
+    const malformed = ofxFile.toString('utf-8').replace(
+      /<TRNAMT>[^\n<]+/,
+      '<TRNAMT>invalid-value',
+    )
+    const ofx = new Ofx(malformed, { parserMode: 'lenient' })
+    const validation = ofx.validate()
+    expect(validation.errors.some(error => error.code === 'INVALID_AMOUNT')).toBe(true)
+    expect(ofx.getWarnings().some(warning => warning.code === 'INVALID_AMOUNT')).toBe(
+      false,
     )
   })
 

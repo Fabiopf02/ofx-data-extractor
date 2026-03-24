@@ -7,7 +7,7 @@ import {
 } from '../@types/common'
 import { OfxResponse, OfxStructure } from '../@types/ofx/index'
 import { StatementTransaction } from '../@types/ofx/common'
-import { parseDateToUtc } from './date'
+import { formatDateFromUtcDate, parseDateToUtc } from './date'
 import { isDebt } from './helpers'
 
 type TransactionContext = {
@@ -17,6 +17,31 @@ type TransactionContext = {
   account: Record<string, any> | null
   institution: Record<string, any> | null
   path: string
+}
+
+function normalizeFitId(fitId: unknown): string {
+  if (fitId === null || fitId === undefined) return ''
+  if (typeof fitId === 'string' || typeof fitId === 'number') return String(fitId)
+  if (typeof fitId === 'object') {
+    const fitIdObject = fitId as {
+      date?: string
+      transactionCode?: string
+      protocol?: string
+    }
+    if (
+      fitIdObject.date !== undefined &&
+      fitIdObject.transactionCode !== undefined &&
+      fitIdObject.protocol !== undefined
+    ) {
+      return `${fitIdObject.date}${fitIdObject.transactionCode}${fitIdObject.protocol}`
+    }
+    try {
+      return JSON.stringify(fitId)
+    } catch {
+      return String(fitId)
+    }
+  }
+  return String(fitId)
 }
 
 function parseAmount(rawAmount: any): number | null {
@@ -61,6 +86,11 @@ function resolvePostedAt(
           message: `Unable to parse date '${dateValue}'.`,
           severity: 'warning',
         },
+      }
+    }
+    if (dateMode === 'formatted' && options.formatDate) {
+      return {
+        value: formatDateFromUtcDate(parsedRawDate, options.formatDate),
       }
     }
     return { value: dateValue }
@@ -207,7 +237,7 @@ export function normalizeOfxData(
       postedAt: postedAtResult.value,
       description,
       descriptionNormalized: normalizeDescription(description),
-      fitId: String(item.transaction.FITID || ''),
+      fitId: normalizeFitId(item.transaction.FITID),
       currency: item.currency,
       account: item.account,
       institution: item.institution,
@@ -248,7 +278,7 @@ export function validateOfxData(data: OfxResponse): ValidationReport {
   const fitIdCounter = new Map<string, number>()
 
   transactions.forEach(item => {
-    const fitId = String(item.transaction.FITID || '')
+    const fitId = normalizeFitId(item.transaction.FITID)
     if (!fitId) {
       warnings.push({
         code: 'MISSING_FITID',

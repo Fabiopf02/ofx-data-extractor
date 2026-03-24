@@ -168,7 +168,7 @@ export class Extractor<T = any> implements IExtractor<T> {
     this.beginOperation()
     const data = this.getResponseInternal()
     const result = validateOfxData(data)
-    this.diagnostics.push(...result.warnings, ...result.errors)
+    this.diagnostics.push(...result.warnings)
     return result
   }
 

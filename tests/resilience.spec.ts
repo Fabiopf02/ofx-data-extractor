@@ -220,4 +220,32 @@ describe('Resilience and diagnostics behavior', () => {
     expect(summary.credit).toBeGreaterThanOrEqual(0)
     expect(summary.debit).toBeGreaterThanOrEqual(0)
   })
+
+  test('should throw in strict mode when both summary sources fail to parse', () => {
+    const malformedBankAndCard = [
+      'OFXHEADER:100',
+      'DATA:OFXSGML',
+      'VERSION:102',
+      '<OFX>',
+      '<BANKMSGSRSV1>',
+      '<STMTTRNRS>',
+      '<STMTRS>',
+      '<BANKTRANLIST>',
+      '<STMTTRN>',
+      '<TRNTYPE>DEBIT',
+      '<TRNAMT>-100',
+      '</STMTTRN>',
+      '<CREDITCARDMSGSRSV1>',
+      '<CCSTMTTRNRS>',
+      '<CCSTMTRS>',
+      '<BANKTRANLIST>',
+      '<STMTTRN>',
+      '<TRNTYPE>CREDIT',
+      '<TRNAMT>25.00',
+      // missing closures on purpose for both blocks
+      '</OFX>',
+    ].join('\n')
+
+    expect(() => new Ofx(malformedBankAndCard).getTransactionsSummary()).toThrow()
+  })
 })

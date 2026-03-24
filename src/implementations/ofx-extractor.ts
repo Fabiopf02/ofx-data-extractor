@@ -44,15 +44,29 @@ export class OfxExtractor extends CustomExtractor {
   getTransactionsSummary(data: string) {
     let bankTransactions: any[] = []
     let creditCardTransactions: any[] = []
+    const parserMode = this.configInstance?.getConfig?.().parserMode || 'strict'
+    let bankError: unknown = null
+    let creditCardError: unknown = null
     try {
       bankTransactions = this.getBankTransferList(data) || []
-    } catch {
+    } catch (error) {
+      bankError = error
       bankTransactions = []
     }
     try {
       creditCardTransactions = this.getCreditCardTransferList(data) || []
-    } catch {
+    } catch (error) {
+      creditCardError = error
       creditCardTransactions = []
+    }
+    const hasStatementTransaction = data.includes('<STMTTRN>')
+    if (
+      parserMode === 'strict' &&
+      bankError &&
+      creditCardError &&
+      hasStatementTransaction
+    ) {
+      throw bankError
     }
     const transactions = bankTransactions.length
       ? bankTransactions

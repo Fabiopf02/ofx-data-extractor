@@ -10,6 +10,7 @@ list the newest change first. Releases before 1.3.0 are only available as git ta
 ## [Unreleased]
 
 ### Fixed
+- 2026-11-15 — `fitId: 'separated'` no longer corrupts a `FITID` that contains `{ } [ ]`: for example `...34567]` gained a trailing comma in `protocol` and `a,}` lost its comma.
 - 2026-11-15 — Text values containing `{`, `}`, `[` or `]` are no longer altered. Previously `x {a}, b` became `x a b`, `{x}` became `x},` and values ending in `]` or `}` (for example `ref [1]`) gained a stray comma. The same applies to `toJson()`, `getContent()`, `getBankTransferList()`, `getCreditCardTransferList()` and `toNormalized()`, for SGML and XML.
 - 2026-11-15 — `validate()` no longer reports false `INVALID_DATE` warnings when `formatDate` produces a layout the date parser cannot read back (for example `M/d/y`, `yy`, `y.M.d` or `yyyy-MM-dd hh:mm:ss`). Dates are now validated from the original OFX value. Truly invalid dates are still reported, and the warning message now shows the original value instead of the formatted one.
 - 2026-11-15 — `toNormalized()` no longer loses the time part of `DT*` fields: `dateMode: 'iso' | 'date' | 'timestamp'` keep `hh:mm:ss`, `dateMode: 'raw'` returns the original OFX value, and `dateMode: 'formatted'` honors time tokens passed through `NormalizeOptions.formatDate`. (#47)

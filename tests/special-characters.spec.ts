@@ -100,6 +100,28 @@ describe('structural characters in text values are preserved', () => {
     })
   })
 
+  describe.each(STYLES)('fitId separated with structural characters (%s)', style => {
+    test.each([
+      '202401130001ABCDEFG34567]',
+      '202401130001ABCDEFG{34}567',
+      '202401130001ABC,}DEF[1]',
+      '2024[1]0130001ABCDEFGH',
+      'a,}',
+      '{x}',
+      '[x]',
+      'a]',
+    ])('keeps every part of %j', fitId => {
+      const [transaction] = new Ofx(buildBankOfx({ FITID: fitId }, style), {
+        fitId: 'separated',
+      }).getBankTransferList()
+      expect(transaction.FITID).toEqual({
+        date: fitId.slice(0, 12),
+        transactionCode: fitId.slice(12, 19),
+        protocol: fitId.slice(19),
+      })
+    })
+  })
+
   test('multiple transactions keep their order and values', () => {
     const base = buildBankOfx({ NAME: 'first {1}' })
     const second = buildBankOfx({ NAME: 'second [2]', FITID: '2' })

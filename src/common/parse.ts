@@ -122,8 +122,16 @@ export function configFinancialInstitutionTransactionId({
   fitId,
   fitValue,
 }: Pick<ExtractorConfig, 'fitId'> & { fitValue: string }) {
-  if (fitId === 'separated')
-    return extractFinancialInstitutionTransactionId(fitValue)
+  if (fitId === 'separated') {
+    // slice first (token length would shift the offsets), then protect each part
+    const parts = JSON.parse(extractFinancialInstitutionTransactionId(fitValue))
+    return JSON.stringify(
+      Object.keys(parts).reduce(
+        (result, key) => ({ ...result, [key]: protectStructuralChars(parts[key]) }),
+        {},
+      ),
+    )
+  }
   return `"${protectStructuralChars(fitValue)}",`
 }
 

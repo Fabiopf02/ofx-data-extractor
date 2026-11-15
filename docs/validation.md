@@ -33,7 +33,7 @@ type ValidationReport = {
 - Missing FITID
 - Duplicated FITID
 - Invalid amount
-- Invalid date (`DTPOSTED`)
+- Invalid date (`DTPOSTED`), checked against the original OFX value, so it does not depend on the configured `formatDate`
 
 ## Severity Semantics
 

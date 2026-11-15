@@ -153,20 +153,25 @@ export class Extractor<T = any> implements IExtractor<T> {
     return this.getResponseInternal()
   }
 
-  toNormalized(options: NormalizeOptions = {}): NormalizedOfxData {
-    this.beginOperation()
+  /**
+   * Runs the extraction with `DT*` fields untouched (no `formatDate`), so
+   * date-aware consumers see the full OFX value (including hh:mm:ss).
+   */
+  private getResponseWithRawDates(): OfxResponse {
     const configInstance = this.customExtractorInstance.configInstance
-    const configuredFormat = configInstance.getConfig().formatDate
-    // Extract DT* fields untouched so `dateMode` can use the full OFX value
-    // (including hh:mm:ss) instead of the already formatted `formatDate` string.
     this.customExtractorInstance.setConfig(configInstance.withRawDates())
-    let data: OfxResponse
     try {
-      data = this.getResponseInternal()
+      return this.getResponseInternal()
     } finally {
       this.customExtractorInstance.setConfig(configInstance)
     }
-    const normalized = normalizeOfxData(data, {
+  }
+
+  toNormalized(options: NormalizeOptions = {}): NormalizedOfxData {
+    this.beginOperation()
+    const configuredFormat =
+      this.customExtractorInstance.configInstance.getConfig().formatDate
+    const normalized = normalizeOfxData(this.getResponseWithRawDates(), {
       ...options,
       formatDate: options.formatDate || configuredFormat,
     })
@@ -179,8 +184,7 @@ export class Extractor<T = any> implements IExtractor<T> {
 
   validate(): ValidationReport {
     this.beginOperation()
-    const data = this.getResponseInternal()
-    return validateOfxData(data)
+    return validateOfxData(this.getResponseWithRawDates())
   }
 
   getWarnings(): OfxDiagnostic[] {

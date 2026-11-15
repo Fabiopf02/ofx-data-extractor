@@ -10,6 +10,7 @@ list the newest change first. Releases before 1.3.0 are only available as git ta
 ## [Unreleased]
 
 ### Fixed
+- 2026-11-15 — `validate()` no longer reports false `INVALID_DATE` warnings when `formatDate` produces a layout the date parser cannot read back (for example `M/d/y`, `yy`, `y.M.d` or `yyyy-MM-dd hh:mm:ss`). Dates are now validated from the original OFX value. Truly invalid dates are still reported, and the warning message now shows the original value instead of the formatted one.
 - 2026-11-15 — `toNormalized()` no longer loses the time part of `DT*` fields: `dateMode: 'iso' | 'date' | 'timestamp'` keep `hh:mm:ss`, `dateMode: 'raw'` returns the original OFX value, and `dateMode: 'formatted'` honors time tokens passed through `NormalizeOptions.formatDate`. (#47)
 - 2026-11-15 — OFX 1.x (SGML) bodies where a container closing tag directly follows an unclosed leaf (for example `<SEVERITY>INFO</STATUS>`, including fully single-line bodies) no longer throw `SyntaxError` in `toJson()`, `getContent()`, `getBankTransferList()` and `toNormalized()`. (#47, reported by @trackoor)
 

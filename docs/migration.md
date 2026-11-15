@@ -22,6 +22,11 @@ entity decoding in your code to avoid double decoding.
 - `iso`, `date` and `timestamp` keep the time part of `DT*` fields.
 - The `raw` property of each normalized transaction still uses the configured `formatDate`, matching `toJson()`.
 
+### Special characters in text
+
+Text values containing `{`, `}`, `[` or `]` are returned exactly as written in the
+OFX (`ref [1]`, `{x}, y`). Earlier versions altered them.
+
 ### OFX 1.x (SGML) without line breaks
 
 Bodies such as `<SEVERITY>INFO</STATUS>` or fully single-line SGML are now parsed

@@ -5,7 +5,12 @@ import {
   ELEMENT_OPENING_REGEX,
   SGML_LEAF_FOLLOWED_BY_CLOSURE_REGEX,
 } from './constants'
-import { objectStartReplacer, objectEndReplacer, trim } from './parse'
+import {
+  objectStartReplacer,
+  objectEndReplacer,
+  protectTextNodes,
+  trim,
+} from './parse'
 
 export class Config {
   private internConfig = {} as ExtractorConfig
@@ -37,7 +42,7 @@ export class Config {
 
   getPartialJsonData(data: string) {
     const [_, ofxContentText] = data.split('<OFX>')
-    const ofxContent = '<OFX>' + ofxContentText
+    const ofxContent = protectTextNodes('<OFX>' + ofxContentText)
     const { sanitizeRow } = this
     /**
      * Use replace first for closing tag so there is no conflict in `objectStartReplacer`

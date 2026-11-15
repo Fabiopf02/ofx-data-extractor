@@ -13,6 +13,17 @@ export const CREDIT_CARD_SERVICE_END = '</CREDITCARDMSGSRSV1>'
 export const START_STATEMENT_TRANSACION = '<STMTTRN>'
 export const FINISH_STATEMENT_TRANSACTION = '</STMTTRN>'
 export const QUOTE_PATTERN = '_#_'
+/**
+ * Text values may contain characters the parser uses as structure (`{ } [ ]`).
+ * They are swapped for these tokens while the text is rewritten as JSON and
+ * restored once it has been parsed (same idea as `QUOTE_PATTERN`).
+ */
+export const STRUCTURAL_CHAR_TOKENS: Readonly<Record<string, string>> = {
+  '{': '_#LB#_',
+  '}': '_#RB#_',
+  '[': '_#LS#_',
+  ']': '_#RS#_',
+}
 export const QUOTE_PATTERN_REGEX = new RegExp(QUOTE_PATTERN, 'g')
 
 export const OPENING_TAGS_INITIALLY_IGNORED = [

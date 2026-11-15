@@ -10,6 +10,7 @@ import {
   OPENING_TAGS_INITIALLY_IGNORED,
   QUOTE_PATTERN,
   QUOTE_PATTERN_REGEX,
+  STRUCTURAL_CHAR_TOKENS,
   START_STATEMENT_TRANSACION,
 } from './constants'
 import { ExtractorConfig } from '../@types/common'
@@ -33,6 +34,28 @@ export function fixJsonProblems(content: string) {
     .slice(0, -1)
   if (result.endsWith(',')) return result.slice(0, -1)
   return result
+}
+
+const STRUCTURAL_CHAR_BY_TOKEN: Record<string, string> = Object.keys(
+  STRUCTURAL_CHAR_TOKENS,
+).reduce((map, char) => ({ ...map, [STRUCTURAL_CHAR_TOKENS[char]]: char }), {})
+
+export function protectStructuralChars(value: string) {
+  return value.replace(/[{}\[\]]/g, char => STRUCTURAL_CHAR_TOKENS[char])
+}
+
+export function restoreStructuralChars(value: string) {
+  return value.replace(
+    /_#(?:LB|RB|LS|RS)#_/g,
+    token => STRUCTURAL_CHAR_BY_TOKEN[token],
+  )
+}
+
+/** Protects `{ } [ ]` inside text nodes (what follows `>` up to the next `<`). */
+export function protectTextNodes(content: string) {
+  return content.replace(/>([^<]+)/g, (_match, text: string) =>
+    `>${protectStructuralChars(text)}`,
+  )
 }
 
 const NAMED_ENTITIES: Record<string, string> = {
@@ -67,7 +90,9 @@ export function decodeEntities(value: string) {
  */
 export function parseOfxJson(text: string) {
   return JSON.parse(text, (_key, value) =>
-    typeof value === 'string' ? decodeEntities(value) : value,
+    typeof value === 'string'
+      ? decodeEntities(restoreStructuralChars(value))
+      : value,
   )
 }
 
@@ -99,7 +124,7 @@ export function configFinancialInstitutionTransactionId({
 }: Pick<ExtractorConfig, 'fitId'> & { fitValue: string }) {
   if (fitId === 'separated')
     return extractFinancialInstitutionTransactionId(fitValue)
-  return `"${fitValue}",`
+  return `"${protectStructuralChars(fitValue)}",`
 }
 
 export function sanitizeCurrency(value: string) {
@@ -143,10 +168,9 @@ type SanitizeValueParams = ExtractorConfig & {
   rawDates?: boolean
 }
 function sanitizeValue(params: SanitizeValueParams) {
-  let fieldValue = params.value
-    .replace(/[{]/g, '')
-    .replace(/(},)/g, '')
-    .replace(/["]/g, QUOTE_PATTERN)
+  let fieldValue = restoreStructuralChars(
+    params.value.replace(/[{]/g, '').replace(/(},)/g, ''),
+  ).replace(/["]/g, QUOTE_PATTERN)
   const fieldName = params.field.replace(/['"]/g, '')
   if (fieldName.endsWith('AMT')) fieldValue = sanitizeCurrency(fieldValue)
   if (isDateField(fieldName) && !params.rawDates)
@@ -162,7 +186,7 @@ function sanitizeValue(params: SanitizeValueParams) {
   if (params.nativeTypes && isValidNumberToConvert(fieldName, fieldValue)) {
     return `${Number(fieldValue)},`
   }
-  return `"${fieldValue}",`
+  return `"${protectStructuralChars(fieldValue)}",`
 }
 
 export function sanitize(

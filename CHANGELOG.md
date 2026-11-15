@@ -4,7 +4,26 @@ All notable changes to this project will be documented in this file.
 
 The format is based on Keep a Changelog and this project follows Semantic Versioning.
 
+Versions are listed from the most recent to the oldest. Inside each version, sections
+list the newest change first. Releases before 1.3.0 are only available as git tags.
+
 ## [Unreleased]
+
+### Fixed
+- 2026-11-15 — `toNormalized()` no longer loses the time part of `DT*` fields: `dateMode: 'iso' | 'date' | 'timestamp'` keep `hh:mm:ss`, `dateMode: 'raw'` returns the original OFX value, and `dateMode: 'formatted'` honors time tokens passed through `NormalizeOptions.formatDate`. (#47)
+- 2026-11-15 — OFX 1.x (SGML) bodies where a container closing tag directly follows an unclosed leaf (for example `<SEVERITY>INFO</STATUS>`, including fully single-line bodies) no longer throw `SyntaxError` in `toJson()`, `getContent()`, `getBankTransferList()` and `toNormalized()`. (#47, reported by @trackoor)
+
+### Changed
+- 2026-11-15 — Character entities (`&amp;`, `&lt;`, `&gt;`, `&quot;`, `&apos;` and numeric references such as `&#39;`/`&#x27;`) are now decoded in text values returned by `toJson()`, `getContent()`, `getBankTransferList()`, `getCreditCardTransferList()` and `toNormalized()`. Unknown or malformed entities are left untouched. Example: `<NAME>A &amp; B` now yields `A & B` instead of `A &amp; B`. (#47)
+
+### Migration Guide
+- Text fields containing character entities are now returned decoded. If you decoded entities yourself, remove that step to avoid double decoding (for example `&amp;lt;` is now returned as `&lt;`).
+- `toNormalized({ dateMode: 'raw' })` now returns the original OFX value (for example `20240102233045`) instead of the `y-M-d` formatted date. The `raw` property of each normalized transaction keeps the configured `formatDate` output, as before.
+
+### Breaking Changes
+- None.
+
+## [1.5.0] - 2026-03-24
 
 ### Highlights
 - Introduced a new normalized output API for product-facing transaction flows.
@@ -21,26 +40,119 @@ The format is based on Keep a Changelog and this project follows Semantic Versio
 ### Changed
 - `getTransactionsSummary()` now supports credit-card-only structures in addition to bank statements.
 - Package metadata updated (`repository`, `bugs`, and `exports`).
-- Character entities (`&amp;`, `&lt;`, `&gt;`, `&quot;`, `&apos;` and numeric references such as `&#39;`/`&#x27;`) are now decoded in text values returned by `toJson()`, `getContent()`, `getBankTransferList()`, `getCreditCardTransferList()` and `toNormalized()`. Unknown or malformed entities are left untouched. Example: `<NAME>A &amp; B` now yields `A & B` instead of `A &amp; B`.
+- Build pipeline optimized and toolchain refreshed.
+- Documentation split into developer guides (`docs/`) and a streamlined README.
 
 ### Fixed
+- `getWarnings()` is scoped to parser failures and no longer mixes validation errors.
+- Invalid `DTPOSTED` values are flagged (`INVALID_DATE`) in normalized output.
+- Date validation hardened and summary date range selection corrected.
 - Browser README examples now use `await Ofx.fromBlob(...)`.
-- OFX 1.x (SGML) bodies where a container closing tag directly follows an unclosed leaf (for example `<SEVERITY>INFO</STATUS>`, including fully single-line bodies) no longer throw `SyntaxError` in `toJson()`, `getContent()`, `getBankTransferList()` and `toNormalized()`. (#47, reported by @trackoor)
-- `toNormalized()` no longer loses the time part of `DT*` fields: `dateMode: 'iso' | 'date' | 'timestamp'` keep `hh:mm:ss`, `dateMode: 'raw'` returns the original OFX value, and `dateMode: 'formatted'` honors time tokens passed through `NormalizeOptions.formatDate`. (#47)
-
-### Deprecated
-- None.
-
-### Removed
-- None.
 
 ### Migration Guide
 - Existing `toJson()` integrations remain compatible.
 - Prefer `toNormalized()` for application-level ingestion pipelines.
 - For upload-based workflows, consider `parserMode: 'lenient'` + `getWarnings()`.
 - Run `validate()` before persistence to enforce data quality rules.
-- Text fields containing character entities are now returned decoded (`A &amp; B` -> `A & B`). If you decoded entities yourself, remove that step to avoid double decoding (for example `&amp;lt;` is now returned as `&lt;`).
-- `dateMode: 'raw'` in `toNormalized()` now returns the original OFX value (for example `20240102233045`) instead of the `y-M-d` formatted date. The `raw` property of each normalized transaction keeps the configured `formatDate` output, as before.
 
 ### Breaking Changes
 - None.
+
+## [1.4.8] - 2025-05-27
+
+### Fixed
+- Parsing files with no `STMTTRN` elements, including `getTransactionsSummary()` on such files.
+
+## [1.4.7] - 2025-02-12
+
+### Fixed
+- `fixJsonProblems` no longer drops double quotes.
+
+## [1.4.6] - 2025-01-24
+
+### Fixed
+- Arbitrary keys are supported in all parsed objects (types).
+
+## [1.4.5] - 2025-01-19
+
+### Fixed
+- Type definitions.
+
+## [1.4.4] - 2024-12-04
+
+### Fixed
+- Regular expressions used by the parser.
+
+## [1.4.3] - 2024-12-03
+
+### Added
+- Exposed a function to get the type of OFX transactions.
+
+### Changed
+- Improved identification of operation/transaction types.
+
+### Fixed
+- Parsing files formatted as a single line (XML).
+
+## [1.4.2] - 2024-11-27
+
+### Fixed
+- Re-release of the 1.4.1 fixes (same changes, listed below).
+
+## [1.4.1] - 2024-11-27
+
+### Fixed
+- Resulting JSON when tag order differs after the transfer lists.
+- Conversion of content containing quotation marks.
+- Debit/credit calculations in `getTransactionsSummary()`.
+
+### Documentation
+- Documented the method to list credit card transactions.
+
+## [1.4.0] - 2024-05-19
+
+### Added
+- Headers are parsed from XML-based OFX files.
+
+### Fixed
+- Parsing failing when `<BANKMSGSRSV1>` is missing.
+
+## [1.3.5] - 2024-05-02
+
+### Fixed
+- Type import in the build output.
+
+## [1.3.4] - 2024-02-14
+
+### Removed
+- `fromFilePath` from the reader.
+
+## [1.3.3] - 2024-01-31
+
+### Changed
+- Maintenance release.
+
+## [1.3.2] - 2024-01-23
+
+### Fixed
+- Existence of credit card data is checked before converting it to an object.
+
+### Documentation
+- Added `CONTRIBUTING.md` and issue templates.
+
+## [1.3.1] - 2023-11-10
+
+### Fixed
+- Lint issue (shadowed variable).
+
+## [1.3.0] - 2023-11-10
+
+### Added
+- Support for `CREDITCARDMSGSRSV1`.
+- The custom extractor is now optional in the constructor.
+
+### Fixed
+- Backslash escaping (#10).
+
+### Changed
+- Internal refactor of the extraction functions.

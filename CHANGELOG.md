@@ -7,7 +7,7 @@ The format is based on Keep a Changelog and this project follows Semantic Versio
 Versions are listed from the most recent to the oldest. Inside each version, sections
 list the newest change first. Releases before 1.3.0 are only available as git tags.
 
-## [Unreleased]
+## [1.6.0] - 2026-11-15
 
 ### Fixed
 - 2026-11-15 — `fitId: 'separated'` no longer corrupts a `FITID` that contains `{ } [ ]`: for example `...34567]` gained a trailing comma in `protocol` and `a,}` lost its comma.

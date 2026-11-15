@@ -8,7 +8,7 @@ import type {
   ValidationReport,
 } from '../@types/common'
 import { IExtractor } from '../interfaces/extractor.interface'
-import { convertMetaDataToObject } from '../common/parse'
+import { applyConfiguredDates, convertMetaDataToObject } from '../common/parse'
 import { CustomExtractor } from '../interfaces/custom-extractor.interface'
 import { Config } from '../common/config'
 import { Reader } from './reader'
@@ -155,11 +155,26 @@ export class Extractor<T = any> implements IExtractor<T> {
 
   toNormalized(options: NormalizeOptions = {}): NormalizedOfxData {
     this.beginOperation()
-    const data = this.getResponseInternal()
-    return normalizeOfxData(data, {
+    const configInstance = this.customExtractorInstance.configInstance
+    const configuredFormat = configInstance.getConfig().formatDate
+    // Extract DT* fields untouched so `dateMode` can use the full OFX value
+    // (including hh:mm:ss) instead of the already formatted `formatDate` string.
+    this.customExtractorInstance.setConfig(configInstance.withRawDates())
+    let data: OfxResponse
+    try {
+      data = this.getResponseInternal()
+    } finally {
+      this.customExtractorInstance.setConfig(configInstance)
+    }
+    const normalized = normalizeOfxData(data, {
       ...options,
-      formatDate: options.formatDate || this.customExtractorInstance.configInstance.getConfig().formatDate,
+      formatDate: options.formatDate || configuredFormat,
     })
+    // `raw` keeps exposing the transaction as toJson() does (configured format).
+    normalized.transactions.forEach(transaction =>
+      applyConfiguredDates(transaction.raw, configuredFormat),
+    )
+    return normalized
   }
 
   validate(): ValidationReport {

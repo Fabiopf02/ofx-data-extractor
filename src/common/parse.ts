@@ -35,6 +35,42 @@ export function fixJsonProblems(content: string) {
   return result
 }
 
+const NAMED_ENTITIES: Record<string, string> = {
+  amp: '&',
+  lt: '<',
+  gt: '>',
+  quot: '"',
+  apos: "'",
+}
+
+/**
+ * Decodes the XML/SGML character entities OFX allows in text fields.
+ * Single pass (`&amp;lt;` -> `&lt;`); unknown or invalid entities are kept as-is.
+ */
+export function decodeEntities(value: string) {
+  if (value.indexOf('&') < 0) return value
+  return value.replace(
+    /&(?:(amp|lt|gt|quot|apos)|#(\d{1,7})|#[xX]([0-9a-fA-F]{1,6}));/g,
+    (match, named?: string, decimal?: string, hex?: string) => {
+      if (named) return NAMED_ENTITIES[named]
+      const codePoint = decimal ? Number(decimal) : parseInt(hex as string, 16)
+      if (codePoint < 1 || codePoint > 0x10ffff) return match
+      if (codePoint >= 0xd800 && codePoint <= 0xdfff) return match
+      return String.fromCodePoint(codePoint)
+    },
+  )
+}
+
+/**
+ * Parses the JSON built from the OFX text, decoding entities only in values
+ * (after parsing, so decoded text can never be mistaken for tags or JSON).
+ */
+export function parseOfxJson(text: string) {
+  return JSON.parse(text, (_key, value) =>
+    typeof value === 'string' ? decodeEntities(value) : value,
+  )
+}
+
 export const extractFinancialInstitutionTransactionId = (fitid: string) =>
   JSON.stringify({
     date: fitid.slice(0, 12),
@@ -87,9 +123,24 @@ export function getConfiguredDate({
   return formatDate(dateString, format)
 }
 
+export function applyConfiguredDates(
+  transaction: unknown,
+  format?: string,
+) {
+  if (!transaction || typeof transaction !== 'object') return
+  const record = transaction as Record<string, unknown>
+  for (const key of Object.keys(record)) {
+    const value = record[key]
+    if (isDateField(key) && typeof value === 'string') {
+      record[key] = getConfiguredDate({ dateString: value, formatDate: format })
+    }
+  }
+}
+
 type SanitizeValueParams = ExtractorConfig & {
   field: string
   value: string
+  rawDates?: boolean
 }
 function sanitizeValue(params: SanitizeValueParams) {
   let fieldValue = params.value
@@ -98,7 +149,7 @@ function sanitizeValue(params: SanitizeValueParams) {
     .replace(/["]/g, QUOTE_PATTERN)
   const fieldName = params.field.replace(/['"]/g, '')
   if (fieldName.endsWith('AMT')) fieldValue = sanitizeCurrency(fieldValue)
-  if (isDateField(fieldName))
+  if (isDateField(fieldName) && !params.rawDates)
     fieldValue = getConfiguredDate({
       dateString: fieldValue,
       formatDate: params.formatDate,
@@ -114,7 +165,10 @@ function sanitizeValue(params: SanitizeValueParams) {
   return `"${fieldValue}",`
 }
 
-export function sanitize(row: string, config: ExtractorConfig) {
+export function sanitize(
+  row: string,
+  config: ExtractorConfig & { rawDates?: boolean },
+) {
   let sanitizedLine = row
   // braces around the values
   if (row.match(/{(\w|\W)+/)) {

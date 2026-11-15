@@ -1,5 +1,11 @@
 export const ELEMENT_CLOSURE_REGEX = /<\/[\w.]+>/g
 export const ELEMENT_OPENING_REGEX = /<[\w.]+>/g
+/**
+ * `<LEAF>value</OTHER>`: an unclosed SGML leaf immediately followed by the
+ * closing tag of its parent container (OFX 1.x allows this without line breaks).
+ */
+export const SGML_LEAF_FOLLOWED_BY_CLOSURE_REGEX =
+  /<([\w.]+)>([^<]*)<\/([\w.]+)>/g
 export const BANK_SERVICE_START = '<BANKMSGSRSV1>'
 export const BANK_SERVICE_END = '</BANKMSGSRSV1>'
 export const CREDIT_CARD_SERVICE_START = '<CREDITCARDMSGSRSV1>'

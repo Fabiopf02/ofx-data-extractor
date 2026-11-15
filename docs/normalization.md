@@ -42,9 +42,9 @@ Top-level output:
 
 ## `dateMode`
 
-- `formatted` (default): parser-formatted date output
-- `raw`: same value kept from parsed OFX payload
-- `iso`: ISO datetime string
+- `formatted` (default): formatted using `NormalizeOptions.formatDate`, else the constructor `formatDate`, else `y-M-d` (time tokens such as `hh:mm:ss` are supported)
+- `raw`: original OFX value (for example `20240102233045`)
+- `iso`: ISO datetime string (keeps time, for example `2024-01-02T23:30:45.000Z`)
 - `date`: JavaScript `Date`
 - `timestamp`: Unix timestamp in milliseconds
 

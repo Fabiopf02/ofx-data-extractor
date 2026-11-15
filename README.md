@@ -93,6 +93,12 @@ async function handleFile(event: Event) {
 - `formatDate?: string`
 - `parserMode?: 'strict' | 'lenient'`
 
+Parsing guarantees:
+
+- OFX 1.x (SGML) and 2.x (XML) are supported, including bodies without line breaks.
+- Character entities (`&amp;`, `&lt;`, `&gt;`, `&quot;`, `&apos;`, numeric references) are decoded in text values.
+- `toNormalized({ dateMode })` keeps the full `DT*` value (including time) for `raw`, `iso`, `date` and `timestamp`.
+
 Parser mode:
 
 - `strict` (default): parsing errors throw.

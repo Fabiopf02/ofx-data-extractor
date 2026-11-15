@@ -10,6 +10,7 @@ import {
   getTransactionsSummary,
   getBankStatementTransactionsText,
   getCreditCardStatementTransactionsText,
+  parseOfxJson,
 } from '../common/parse'
 import { OfxStructure } from '../@types/ofx/index'
 import { CustomExtractor } from '../interfaces/custom-extractor.interface'
@@ -26,7 +27,7 @@ export class OfxExtractor extends CustomExtractor {
       this.configInstance.getPartialJsonData(data),
     )
     if (!newBankStatementTransactions) return []
-    return JSON.parse(`{${fixJsonProblems(newBankStatementTransactions)}}`)
+    return parseOfxJson(`{${fixJsonProblems(newBankStatementTransactions)}}`)
       ?.BANKMSGSRSV1?.STMTTRNRS?.STMTRS?.BANKTRANLIST?.STRTTRN
   }
 
@@ -36,7 +37,7 @@ export class OfxExtractor extends CustomExtractor {
         this.configInstance.getPartialJsonData(data),
       )
     if (!newCreditCardStatementTransactions) return []
-    return JSON.parse(
+    return parseOfxJson(
       `{${fixJsonProblems(newCreditCardStatementTransactions)}}`,
     )?.CREDITCARDMSGSRSV1?.CCSTMTTRNRS?.CCSTMTRS?.BANKTRANLIST?.STRTTRN
   }
@@ -126,6 +127,6 @@ export class OfxExtractor extends CustomExtractor {
         newCreditCardStatementTransactions,
       )
     }
-    return JSON.parse(`{${fixJsonProblems(result)}}`)
+    return parseOfxJson(`{${fixJsonProblems(result)}}`)
   }
 }

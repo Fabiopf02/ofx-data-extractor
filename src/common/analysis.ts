@@ -10,6 +10,8 @@ import { StatementTransaction } from '../@types/ofx/common'
 import { formatDateFromUtcDate, parseDateToUtc } from './date'
 import { isDebt } from './helpers'
 
+const DEFAULT_DATE_FORMAT = 'y-M-d'
+
 type TransactionContext = {
   source: 'bank' | 'credit_card'
   transaction: StatementTransaction
@@ -88,9 +90,12 @@ function resolvePostedAt(
         },
       }
     }
-    if (dateMode === 'formatted' && options.formatDate) {
+    if (dateMode === 'formatted') {
       return {
-        value: formatDateFromUtcDate(parsedRawDate, options.formatDate),
+        value: formatDateFromUtcDate(
+          parsedRawDate,
+          options.formatDate || DEFAULT_DATE_FORMAT,
+        ),
       }
     }
     return { value: dateValue }
